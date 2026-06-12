@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storm Bridge AI — Hurricane Recovery Education</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05111f;
+  --deep: #03090f;
+  --card: #0b1f35;
+  --card2: #0f2840;
+  --teal: #00d9b8;
+  --teal2: #00a88e;
+  --gold: #f5c842;
+  --amber: #f0944d;
+  --red: #e05c5c;
+  --purple: #8b7cf8;
+  --mist: #7fa8c4;
+  --white: #e8f4ff;
+  --border: rgba(0,217,184,0.13);
+  --border2: rgba(255,255,255,0.07);
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 40% at 15% 5%,rgba(0,217,184,0.05) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 90% 90%,rgba(11,31,53,0.8) 0%,transparent 70%);pointer-events:none;z-index:0;}
+
+/* SCREENS */
+.screen{display:none;position:relative;z-index:1;min-height:100vh;}
+.screen.active{display:block;}
+
+/* ===== ONBOARDING ===== */
+#screen-onboard{background:linear-gradient(160deg,#05111f 0%,#071828 60%,#051420 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;}
+.ob-logo{text-align:center;margin-bottom:32px;}
+.ob-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--teal),var(--teal2));border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 14px;box-shadow:0 0 40px rgba(0,217,184,0.3);}
+.ob-brand{font-family:'Fraunces',serif;font-size:28px;font-weight:900;letter-spacing:-.5px;}
+.ob-brand span{color:var(--teal);}
+.ob-tagline{font-size:13px;color:var(--mist);margin-top:4px;}
+.ob-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:22px;width:100%;max-width:400px;}
+.ob-step{display:none;animation:fadeUp .3s ease;}
+.ob-step.active{display:block;}
+.ob-title{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+.ob-sub{font-size:13px;color:var(--mist);margin-bottom:20px;line-height:1.5;}
+.form-group{margin-bottom:14px;}
+label{font-size:12px;color:var(--mist);font-weight:600;text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px;}
+input,select,textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:10px;padding:11px 14px;color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+input:focus,select:focus,textarea:focus{border-color:rgba(0,217,184,0.4);}
+select option{background:#0b1f35;color:var(--white);}
+.chip-group{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px;}
+.chip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:rgba(255,255,255,0.04);color:var(--mist);transition:all .2s;user-select:none;}
+.chip.selected{background:rgba(0,217,184,0.12);border-color:rgba(0,217,184,0.4);color:var(--teal);}
+.btn{width:100%;padding:13px;border-radius:12px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:10px;}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;box-shadow:0 0 20px rgba(0,217,184,0.25);}
+.btn-primary:active{opacity:.85;}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--white);border:1px solid var(--border2);}
+.ob-progress{display:flex;gap:5px;margin-bottom:18px;}
+.ob-dot{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.1);transition:background .3s;}
+.ob-dot.done{background:var(--teal);}
+
+/* ===== DIAGNOSTIC ===== */
+#screen-diagnostic{padding:0;}
+.diag-header{background:linear-gradient(90deg,rgba(0,217,184,0.1),transparent);border-bottom:1px solid var(--border);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);}
+.diag-info h3{font-family:'Fraunces',serif;font-size:16px;font-weight:700;}
+.diag-info p{font-size:11px;color:var(--mist);}
+.diag-timer{background:rgba(0,217,184,0.1);border:1px solid rgba(0,217,184,0.2);border-radius:10px;padding:5px 12px;font-size:13px;font-weight:700;color:var(--teal);}
+.diag-body{padding:18px;max-width:430px;margin:0 auto;padding-bottom:100px;}
+.section-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.2);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
+.q-num{font-size:10px;color:var(--mist);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;font-weight:600;}
+.q-text{font-size:14px;line-height:1.5;margin-bottom:12px;font-weight:500;}
+.q-options{display:flex;flex-direction:column;gap:7px;}
+.q-opt{padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:rgba(255,255,255,0.03);font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;}
+.q-opt:active,.q-opt.selected{background:rgba(0,217,184,0.08);border-color:rgba(0,217,184,0.35);color:var(--teal);}
+.q-opt .opt-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.q-opt.selected .opt-letter{background:var(--teal);border-color:var(--teal);color:#000;}
+.q-opt.correct{background:rgba(0,217,184,0.1);border-color:var(--teal);}
+.q-opt.wrong{background:rgba(224,92,92,0.1);border-color:var(--red);}
+textarea.short-ans{min-height:80px;resize:vertical;font-size:13px;}
+.diag-diagram{background:rgba(255,255,255,0.03);border:1px dashed var(--border2);border-radius:12px;padding:14px;text-align:center;margin-bottom:10px;}
+.diag-diagram img{max-width:100%;border-radius:8px;margin-bottom:8px;}
+.diagram-svg{width:100%;max-width:260px;height:180px;margin:0 auto;display:block;}
+.label-input{background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--white);width:90px;font-family:'Plus Jakarta Sans',sans-serif;text-align:center;}
+.diag-fixed-bottom{position:fixed;bottom:0;left:0;right:0;padding:12px 18px;background:rgba(5,17,31,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);z-index:20;max-width:430px;margin:0 auto;}
+
+/* ===== MAIN APP ===== */
+#screen-app{padding-bottom:70px;}
+.app-header{padding:18px 18px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(5,17,31,0.92);backdrop-filter:blur(14px);z-index:10;border-bottom:1px solid var(--border);}
+.app-brand{font-family:'Fraunces',serif;font-size:17px;font-weight:900;}
+.app-brand span{color:var(--teal);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.notif-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
+.avatar-sm{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;box-shadow:0 0 12px rgba(0,217,184,0.2);}
+
+.app-wrap{padding:14px 16px;max-width:430px;margin:0 auto;}
+
+/* TABS */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(5,17,31,0.97);border-top:1px solid var(--border);display:flex;padding:8px 0 14px;z-index:20;max-width:430px;margin:0 auto;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .2s;}
+.nav-icon{font-size:20px;line-height:1;}
+.nav-label{font-size:9px;font-weight:600;color:var(--mist);text-transform:uppercase;letter-spacing:.4px;transition:color .2s;}
+.nav-item.active .nav-label{color:var(--teal);}
+.nav-item.active .nav-icon{filter:drop-shadow(0 0 6px rgba(0,217,184,0.5));}
+
+.tab-panel{display:none;animation:fadeUp .25s ease;}
+.tab-panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* HERO BANNER */
+.hero-banner{background:linear-gradient(135deg,var(--card2),#112240);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:16px;position:relative;overflow:hidden;}
+.hero-banner::after{content:'🌉';position:absolute;right:-10px;top:-10px;font-size:80px;opacity:.07;}
+.hero-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.hero-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 16px rgba(0,217,184,0.25);}
+.hero-name{font-family:'Fraunces',serif;font-size:18px;font-weight:700;}
+.hero-meta{font-size:12px;color:var(--mist);}
+.recovery-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.25);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--gold);margin-top:4px;}
+.prog-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.prog-box{background:rgba(0,0,0,0.2);border-radius:10px;padding:10px;}
+.prog-box-label{font-size:10px;color:var(--mist);display:flex;justify-content:space-between;margin-bottom:5px;}
+.prog-box-label strong{color:var(--teal);}
+.prog-bar{height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--teal),var(--teal2));transition:width 1.2s ease;}
+
+/* SECTION TITLE */
+.sec-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 10px;display:flex;align-items:center;gap:8px;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* LESSON CARDS */
+.lesson-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.lesson-card:active{border-color:rgba(0,217,184,0.4);transform:translateY(-1px);}
+.lc-stripe{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.lc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+.lc-subj{font-size:10px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;}
+.lc-prog-pill{font-size:10px;padding:2px 8px;border-radius:8px;background:rgba(0,217,184,0.08);color:var(--teal);}
+.lc-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;margin-bottom:3px;}
+.lc-desc{font-size:12px;color:var(--mist);line-height:1.4;margin-bottom:8px;}
+.lc-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.tag{font-size:10px;padding:3px 8px;border-radius:8px;background:rgba(255,255,255,0.05);color:var(--mist);}
+.tag.offline{background:rgba(0,217,184,0.08);color:var(--teal);}
+.tag.print{background:rgba(240,148,77,0.1);color:var(--amber);}
+.tag.video{background:rgba(224,92,92,0.1);color:var(--red);}
+
+/* TIMETABLE */
+.timetable{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.tt-header{background:linear-gradient(90deg,rgba(0,217,184,0.1),transparent);padding:12px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.tt-header h4{font-family:'Fraunces',serif;font-size:14px;font-weight:700;}
+.tt-week-badge{font-size:11px;color:var(--gold);background:rgba(245,200,66,0.1);padding:2px 8px;border-radius:8px;}
+.tt-row{display:grid;grid-template-columns:70px 1fr auto;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;cursor:pointer;transition:background .2s;}
+.tt-row:last-child{border-bottom:none;}
+.tt-row:active{background:rgba(0,217,184,0.04);}
+.tt-day{font-size:11px;font-weight:700;color:var(--mist);}
+.tt-day.today{color:var(--teal);}
+.tt-subjects{font-size:12px;}
+.tt-subjects span{display:block;font-size:10px;color:var(--mist);margin-top:2px;}
+.tt-check{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s;flex-shrink:0;}
+.tt-check.done{background:var(--teal);border-color:var(--teal);color:#000;}
+
+/* WEEKLY REPORT */
+.report-card{background:linear-gradient(135deg,#0d1e36,#0f2840);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;}
+.report-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.report-title{font-family:'Fraunces',serif;font-size:15px;font-weight:700;}
+.report-date{font-size:11px;color:var(--mist);}
+.report-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.stat-box{background:rgba(0,0,0,0.2);border-radius:10px;padding:10px;text-align:center;}
+.stat-num{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--teal);}
+.stat-label{font-size:10px;color:var(--mist);margin-top:2px;}
+.report-message{background:rgba(245,200,66,0.06);border:1px solid rgba(245,200,66,0.15);border-radius:10px;padding:10px 12px;font-size:12px;color:#f5e8a0;line-height:1.5;font-style:italic;}
+.report-subjects{margin-top:12px;}
+.rs-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.rs-name{font-size:12px;width:80px;flex-shrink:0;}
+.rs-bar{flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;}
+.rs-fill{height:100%;border-radius:3px;transition:width 1.2s ease;}
+.rs-pct{font-size:11px;color:var(--teal);width:30px;text-align:right;flex-shrink:0;}
+
+/* AI TUTOR */
+.tutor-box{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px;}
+.tutor-header{background:linear-gradient(90deg,rgba(0,217,184,0.1),transparent);padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.tutor-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 10px rgba(0,217,184,0.3);}
+.tutor-name{font-family:'Fraunces',serif;font-size:14px;font-weight:700;}
+.tutor-status{font-size:10px;color:var(--teal);}
+.chat-msgs{padding:14px;min-height:180px;max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;}
+.chat-msgs::-webkit-scrollbar{width:3px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--card2);border-radius:2px;}
+.msg{max-width:86%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.45;}
+.msg.ai{background:var(--card2);border:1px solid var(--border);color:var(--white);align-self:flex-start;border-radius:4px 12px 12px 12px;}
+.msg.user{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;font-weight:500;align-self:flex-end;border-radius:12px 4px 12px 12px;}
+.msg.typing{color:var(--mist);font-style:italic;}
+.quick-qs{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 10px;}
+.qq{font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid var(--border2);background:rgba(255,255,255,0.04);color:var(--mist);font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;}
+.qq:active{background:rgba(0,217,184,0.08);color:var(--teal);}
+.chat-input-row{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);}
+.chat-inp{flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;color:var(--white);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;resize:none;}
+.chat-inp:focus{border-color:rgba(0,217,184,0.4);}
+.send-btn{width:38px;height:38px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--teal),var(--teal2));cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all .2s;}
+.send-btn:active{transform:scale(.93);}
+
+/* RESOURCES */
+.res-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
+.res-card:active{border-color:rgba(0,217,184,0.35);}
+.res-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.res-info{flex:1;}
+.res-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+.res-sub{font-size:11px;color:var(--mist);}
+.res-badge{font-size:10px;padding:2px 8px;border-radius:8px;background:rgba(0,217,184,0.08);color:var(--teal);flex-shrink:0;font-weight:600;}
+.paper-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;}
+.paper-card:active{border-color:rgba(0,217,184,0.35);}
+.paper-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.paper-year{font-family:'Fraunces',serif;font-size:15px;font-weight:700;}
+.paper-actions{display:flex;gap:6px;}
+.paper-btn{font-size:11px;padding:4px 10px;border-radius:8px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;transition:all .2s;}
+.paper-btn.quiz{background:rgba(0,217,184,0.12);color:var(--teal);}
+.paper-btn.print{background:rgba(240,148,77,0.12);color:var(--amber);}
+.paper-sub{font-size:11px;color:var(--mist);}
+.video-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:0;}
+.video-thumb{width:80px;height:56px;background:linear-gradient(135deg,#1a0a0a,#2a0a0a);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;position:relative;}
+.video-play{position:absolute;width:24px;height:24px;background:rgba(255,0,0,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.video-info{padding:10px 12px;flex:1;}
+.video-title{font-size:12px;font-weight:600;margin-bottom:3px;line-height:1.3;}
+.video-meta{font-size:10px;color:var(--mist);}
+.video-offline-badge{font-size:10px;color:var(--teal);background:rgba(0,217,184,0.08);padding:2px 7px;border-radius:6px;margin-top:4px;display:inline-block;}
+
+/* SCHOOL DASHBOARD */
+.dash-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
+.dash-tabs::-webkit-scrollbar{display:none;}
+.dtab{flex-shrink:0;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:rgba(255,255,255,0.05);color:var(--mist);transition:all .2s;}
+.dtab.active{background:var(--teal);color:#000;}
+.dpanel{display:none;animation:fadeUp .25s ease;}
+.dpanel.active{display:block;}
+.school-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.sch-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;}
+.sch-stat-num{font-family:'Fraunces',serif;font-size:26px;font-weight:900;color:var(--teal);}
+.sch-stat-label{font-size:10px;color:var(--mist);margin-top:2px;}
+.student-row{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
+.student-row:active{border-color:rgba(0,217,184,0.35);}
+.stu-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#6b5ce7);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.stu-info{flex:1;}
+.stu-name{font-size:13px;font-weight:600;}
+.stu-meta{font-size:10px;color:var(--mist);}
+.stu-score{text-align:right;}
+.stu-pct{font-family:'Fraunces',serif;font-size:18px;font-weight:900;color:var(--teal);}
+.stu-trend{font-size:10px;color:#4ade80;}
+.alert-item{background:rgba(224,92,92,0.07);border:1px solid rgba(224,92,92,0.15);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.alert-text{font-size:12px;line-height:1.5;}
+.alert-text strong{color:var(--white);}
+.contact-btn{margin-top:6px;font-size:11px;padding:4px 10px;border-radius:8px;background:rgba(224,92,92,0.12);color:var(--red);border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-width:430px;animation:slideUp .3s ease;max-height:85vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);margin:0 auto 16px;}
+.modal-title{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+.modal-sub{font-size:13px;color:var(--mist);margin-bottom:16px;line-height:1.5;}
+.modal-section-title{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--teal);font-weight:700;margin-bottom:6px;}
+.modal-content{font-size:13px;line-height:1.7;margin-bottom:14px;white-space:pre-line;}
+.encourage-box{background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:12px;padding:12px;font-size:13px;color:#f5e8a0;line-height:1.6;font-style:italic;margin-bottom:14px;}
+.modal-btn{width:100%;padding:13px;border-radius:12px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;}
+
+/* ENCOURAGEMENT OVERLAY */
+.encourage-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.encourage-overlay.open{display:flex;}
+.encourage-card{background:linear-gradient(135deg,#0f2840,#0a1f38);border:1px solid rgba(0,217,184,0.2);border-radius:24px;padding:28px 24px;text-align:center;max-width:320px;margin:20px;animation:popIn .4s ease;}
+@keyframes popIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+.enc-emoji{font-size:52px;margin-bottom:14px;}
+.enc-title{font-family:'Fraunces',serif;font-size:22px;font-weight:900;margin-bottom:8px;}
+.enc-msg{font-size:14px;color:var(--mist);line-height:1.6;margin-bottom:20px;}
+.enc-score{font-family:'Fraunces',serif;font-size:40px;font-weight:900;color:var(--teal);margin-bottom:6px;}
+.enc-sub{font-size:12px;color:var(--mist);margin-bottom:20px;}
+.enc-btn{width:100%;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+
+/* TOAST */
+#toast{display:none;position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:rgba(0,217,184,0.12);border:1px solid rgba(0,217,184,0.25);color:var(--teal);padding:9px 18px;border-radius:20px;font-size:13px;z-index:300;backdrop-filter:blur(8px);white-space:nowrap;}
+
+/* OFFLINE NOTICE */
+.offline-note{background:rgba(0,217,184,0.06);border:1px solid rgba(0,217,184,0.13);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--mist);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<!-- ===== ONBOARDING ===== -->
+<div id="screen-onboard" class="screen active">
+  <div class="ob-logo">
+    <div class="ob-icon">🌉</div>
+    <div class="ob-brand">Storm <span>Bridge</span> AI</div>
+    <div class="ob-tagline">Bridging the gap — CXC & CAPE Hurricane Recovery</div>
+  </div>
+
+  <div class="ob-card">
+    <div class="ob-progress" id="obProgress">
+      <div class="ob-dot done" id="dot1"></div>
+      <div class="ob-dot" id="dot2"></div>
+      <div class="ob-dot" id="dot3"></div>
+      <div class="ob-dot" id="dot4"></div>
+      <div class="ob-dot" id="dot5"></div>
+    </div>
+
+    <!-- Step 0: Role Selection -->
+    <div class="ob-step active" id="ob-step0">
+      <div class="ob-title">Welcome to Storm Bridge AI 👋</div>
+      <div class="ob-sub">Who are you? Select your role to get started.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div id="role-student" onclick="selectRole('student')" style="background:rgba(0,217,184,0.08);border:2px solid rgba(0,217,184,0.4);border-radius:16px;padding:20px 12px;text-align:center;cursor:pointer;transition:all .2s;">
+          <div style="font-size:32px;margin-bottom:8px;">👩🏾‍🎓</div>
+          <div style="font-family:'Fraunces',serif;font-size:14px;font-weight:700;">Student</div>
+          <div style="font-size:11px;color:var(--mist);margin-top:3px;line-height:1.4;">CXC or CAPE student in recovery</div>
+        </div>
+        <div id="role-teacher" onclick="selectRole('teacher')" style="background:rgba(255,255,255,0.04);border:2px solid var(--border2);border-radius:16px;padding:20px 12px;text-align:center;cursor:pointer;transition:all .2s;">
+          <div style="font-size:32px;margin-bottom:8px;">👩🏽‍🏫</div>
+          <div style="font-family:'Fraunces',serif;font-size:14px;font-weight:700;">Teacher</div>
+          <div style="font-size:11px;color:var(--mist);margin-top:3px;line-height:1.4;">Educator or school admin</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="obNext(1)">Continue →</button>
+    </div>
+
+    <!-- Step 1: Personal Info -->
+    <div class="ob-step" id="ob-step1">
+      <div class="ob-title">Your Details 📋</div>
+      <div class="ob-sub">Tell us about yourself so we can personalise your recovery plan.</div>
+      <div class="form-group"><label>Full Name</label><input type="text" id="ob-name" placeholder="e.g. Aaliyah Brown" value="Aaliyah Brown"></div>
+      <div class="form-group"><label>Age</label><input type="number" id="ob-age" placeholder="e.g. 16" value="16" min="10" max="25"></div>
+      <div class="form-group"><label>School</label><input type="text" id="ob-school" placeholder="e.g. St. Thomas High School" value="St. Thomas High School"></div>
+      <div class="form-group"><label>Grade / Year</label>
+        <select id="ob-grade">
+          <option>Grade 9</option><option>Grade 10</option><option selected>Grade 11</option><option>Lower Six (CAPE 1)</option><option>Upper Six (CAPE 2)</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Parish</label>
+        <select id="ob-parish">
+          <option>St. Thomas</option><option>Kingston</option><option>St. Andrew</option><option>St. Catherine</option><option>Clarendon</option><option>Manchester</option><option>St. Elizabeth</option><option>Westmoreland</option><option>Hanover</option><option>St. James</option><option>Trelawny</option><option>St. Ann</option><option>St. Mary</option><option>Portland</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="obNext(2)">Continue →</button>
+    </div>
+
+    <!-- Step 2: Level & Subjects -->
+    <div class="ob-step" id="ob-step2">
+      <div class="ob-title">Your Level & Subjects 📚</div>
+      <div class="ob-sub">Select your exam level and the subjects you are studying.</div>
+      <div class="form-group">
+        <label>Exam Level</label>
+        <div class="chip-group">
+          <div class="chip selected" onclick="selectChip(this,'level')">CXC / CSEC</div>
+          <div class="chip" onclick="selectChip(this,'level')">CAPE Unit 1</div>
+          <div class="chip" onclick="selectChip(this,'level')">CAPE Unit 2</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Subjects (select all that apply)</label>
+        <div class="chip-group" id="subject-chips-csec" style="margin-bottom:10px;">
+          <div class="chip selected" onclick="toggleChip(this)">Mathematics</div>
+          <div class="chip selected" onclick="toggleChip(this)">English A</div>
+          <div class="chip selected" onclick="toggleChip(this)">Biology</div>
+          <div class="chip" onclick="toggleChip(this)">Additional Mathematics</div>
+          <div class="chip" onclick="toggleChip(this)">Agricultural Science (Single Award)</div>
+          <div class="chip" onclick="toggleChip(this)">Agricultural Science (Double Award)</div>
+          <div class="chip" onclick="toggleChip(this)">Chemistry</div>
+          <div class="chip" onclick="toggleChip(this)">Physics</div>
+          <div class="chip" onclick="toggleChip(this)">Human and Social Biology</div>
+          <div class="chip" onclick="toggleChip(this)">Information Technology</div>
+          <div class="chip" onclick="toggleChip(this)">Integrated Science</div>
+          <div class="chip selected" onclick="toggleChip(this)">Caribbean History</div>
+          <div class="chip selected" onclick="toggleChip(this)">Principles of Accounts</div>
+          <div class="chip" onclick="toggleChip(this)">Economics</div>
+          <div class="chip" onclick="toggleChip(this)">EDPM</div>
+          <div class="chip" onclick="toggleChip(this)">English B</div>
+          <div class="chip" onclick="toggleChip(this)">Geography</div>
+          <div class="chip" onclick="toggleChip(this)">Office Administration</div>
+          <div class="chip" onclick="toggleChip(this)">Principles of Business</div>
+          <div class="chip" onclick="toggleChip(this)">Religious Education</div>
+          <div class="chip" onclick="toggleChip(this)">Social Studies</div>
+          <div class="chip" onclick="toggleChip(this)">Building Technology</div>
+          <div class="chip" onclick="toggleChip(this)">Clothing and Textiles</div>
+          <div class="chip" onclick="toggleChip(this)">Electrical and Electronic Technology</div>
+          <div class="chip" onclick="toggleChip(this)">Food and Nutrition</div>
+          <div class="chip" onclick="toggleChip(this)">Home Economics Management</div>
+          <div class="chip" onclick="toggleChip(this)">Mechanical Engineering Technology</div>
+          <div class="chip" onclick="toggleChip(this)">Music</div>
+          <div class="chip" onclick="toggleChip(this)">Physical Education and Sport</div>
+          <div class="chip" onclick="toggleChip(this)">Technical Drawing</div>
+          <div class="chip" onclick="toggleChip(this)">Theatre Arts</div>
+          <div class="chip" onclick="toggleChip(this)">Visual Arts</div>
+          <div class="chip" onclick="toggleChip(this)">French</div>
+          <div class="chip" onclick="toggleChip(this)">Spanish</div>
+        </div>
+        <div style="font-size:11px;color:var(--mist);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin:10px 0 6px;">CAPE Subjects</div>
+        <div class="chip-group" id="subject-chips-cape">
+          <div class="chip" onclick="toggleChip(this)">Agricultural Science (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Applied Mathematics</div>
+          <div class="chip" onclick="toggleChip(this)">Biology (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Chemistry (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Computer Science</div>
+          <div class="chip" onclick="toggleChip(this)">Environmental Science</div>
+          <div class="chip" onclick="toggleChip(this)">Food and Nutrition (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Geography (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Information Technology (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Integrated Mathematics</div>
+          <div class="chip" onclick="toggleChip(this)">Physics (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Pure Mathematics</div>
+          <div class="chip" onclick="toggleChip(this)">Accounting</div>
+          <div class="chip" onclick="toggleChip(this)">Economics (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Entrepreneurship</div>
+          <div class="chip" onclick="toggleChip(this)">Financial Services Studies</div>
+          <div class="chip" onclick="toggleChip(this)">Law</div>
+          <div class="chip" onclick="toggleChip(this)">Logistics and Supply Chain Operations</div>
+          <div class="chip" onclick="toggleChip(this)">Management of Business</div>
+          <div class="chip" onclick="toggleChip(this)">Tourism</div>
+          <div class="chip" onclick="toggleChip(this)">Animation &amp; Game Design</div>
+          <div class="chip" onclick="toggleChip(this)">Art and Design</div>
+          <div class="chip" onclick="toggleChip(this)">Caribbean Studies</div>
+          <div class="chip" onclick="toggleChip(this)">Communication Studies</div>
+          <div class="chip" onclick="toggleChip(this)">Digital Media</div>
+          <div class="chip" onclick="toggleChip(this)">French (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Green Engineering</div>
+          <div class="chip" onclick="toggleChip(this)">History</div>
+          <div class="chip" onclick="toggleChip(this)">Literatures in English</div>
+          <div class="chip" onclick="toggleChip(this)">Performing Arts</div>
+          <div class="chip" onclick="toggleChip(this)">Physical Education and Sport (CAPE)</div>
+          <div class="chip" onclick="toggleChip(this)">Sociology</div>
+          <div class="chip" onclick="toggleChip(this)">Spanish (CAPE)</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="obNext(3)">Continue →</button>
+      <button class="btn btn-ghost" onclick="obNext(1)" style="margin-top:6px;">← Back</button>
+    </div>
+
+    <!-- Step 3: Situation -->
+    <div class="ob-step" id="ob-step3">
+      <div class="ob-title">Your Situation 🌀</div>
+      <div class="ob-sub">Help us understand how the hurricane has affected your learning so we can support you better.</div>
+      <div class="form-group">
+        <label>What did the hurricane affect? (select all)</label>
+        <div class="chip-group">
+          <div class="chip selected" onclick="toggleChip(this)">School closed</div>
+          <div class="chip selected" onclick="toggleChip(this)">No electricity</div>
+          <div class="chip selected" onclick="toggleChip(this)">No internet</div>
+          <div class="chip" onclick="toggleChip(this)">Lost textbooks/notes</div>
+          <div class="chip" onclick="toggleChip(this)">Device damaged</div>
+          <div class="chip" onclick="toggleChip(this)">Displaced from home</div>
+          <div class="chip" onclick="toggleChip(this)">Lost teacher contact</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>How many weeks of school have you missed?</label>
+        <select id="ob-weeks">
+          <option>Less than 1 week</option>
+          <option selected>1–2 weeks</option>
+          <option>3–4 weeks</option>
+          <option>More than a month</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Exam date (approximate)</label>
+        <select id="ob-exam">
+          <option>May–June 2025</option>
+          <option selected>May–June 2026</option>
+          <option>January 2026</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="obNext(4)">Continue →</button>
+      <button class="btn btn-ghost" onclick="obNext(2)" style="margin-top:6px;">← Back</button>
+    </div>
+
+    <!-- Step 4: Exam Timetable -->
+    <div class="ob-step" id="ob-step4">
+      <div class="ob-title">Exam Timetable 📅</div>
+      <div class="ob-sub">We'll build your exam countdown calendar automatically based on the subjects you selected.</div>
+      <div style="background:rgba(0,217,184,0.05);border:1px solid rgba(0,217,184,0.12);border-radius:12px;padding:12px;font-size:12px;color:var(--mist);line-height:1.6;margin-bottom:12px;">
+        📡 <strong style="color:var(--white);">We've got this covered.</strong> We automatically fetch official CXC exam dates from <strong style="color:var(--teal);">cxc.org</strong> based on your subjects. Your exam calendar updates the moment CXC releases dates and you will be notified.
+      </div>
+      <div class="form-group">
+        <label>Or, if you already know it, enter your first exam date</label>
+        <input type="date" id="ob-examdate">
+      </div>
+      <button class="btn btn-primary" onclick="obNext(5)">Continue →</button>
+      <button class="btn btn-ghost" onclick="obNext(3)" style="margin-top:6px;">← Back</button>
+    </div>
+
+    <!-- Step 5: All set -->
+    <div class="ob-step" id="ob-step5">
+      <div class="ob-title">You're all set! 🎉</div>
+      <div class="ob-sub">We've built your personalised recovery plan based on your subjects, situation, and exam timeline.<br><br>You can take a short <strong>diagnostic test</strong> any time from your Home screen — it helps us fine-tune your lesson priorities, but it's optional and you can start learning right away.</div>
+      <button class="btn btn-primary" onclick="finishSignup()">Go to Home →</button>
+      <button class="btn btn-ghost" onclick="obNext(4)" style="margin-top:6px;">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DIAGNOSTIC ===== -->
+<div id="screen-diagnostic" class="screen">
+  <div class="diag-header">
+    <div class="diag-info">
+      <h3>Diagnostic Assessment</h3>
+      <p id="diagSubjLabel">Mathematics — Section A</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="diag-timer" id="diagTimer">45:00</div>
+      <div class="notif-btn" style="font-size:12px;" onclick="clearInterval(timerInterval);showScreen('screen-app')" title="Save & exit">✕</div>
+    </div>
+  </div>
+
+  <div class="diag-body" id="diagBody"></div>
+
+  <div class="diag-fixed-bottom" style="left:50%;transform:translateX(-50%);max-width:430px;">
+    <button class="btn btn-primary" id="diagActionBtn" onclick="diagNextSubject()" style="margin-top:0;">Submit & Next Subject →</button>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="screen-app" class="screen">
+  <div class="app-header">
+    <div class="app-brand">Storm <span>Bridge</span> AI</div>
+    <div class="header-right">
+      <div class="notif-btn" onclick="openNotifCenter()">🔔</div>
+      <div class="avatar-sm" id="headerAvatar" onclick="openProfile()">👩🏾</div>
+    </div>
+  </div>
+
+  <div class="app-wrap">
+
+    <!-- HOME TAB -->
+    <div id="tab-home" class="tab-panel active">
+      <div id="diagBannerWrap" style="display:none;background:linear-gradient(135deg,rgba(0,217,184,0.1),rgba(0,168,142,0.05));border:1px solid rgba(0,217,184,0.25);border-radius:16px;padding:16px;margin-bottom:14px;">
+        <div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;margin-bottom:6px;">🎯 Take your diagnostic test</div>
+        <div style="font-size:12px;color:var(--mist);line-height:1.5;margin-bottom:10px;">A short, optional CXC/CAPE-style assessment (25–40 min) that helps us prioritise your lessons and activate your personalised recovery plan. You can skip this for now and take it anytime.</div>
+        <button class="btn btn-primary" style="margin-top:0;" onclick="startDiagnostic()">Start Diagnostic Test →</button>
+        <button class="btn btn-ghost" style="margin-top:8px;" onclick="document.getElementById('diagBannerWrap').style.display='none';showToast('No problem — take it anytime from Home')">Maybe later</button>
+      </div>
+
+      <div class="hero-banner">
+        <div class="hero-top">
+          <div class="hero-avatar" id="heroAvatar">👩🏾‍🎓</div>
+          <div>
+            <div class="hero-name" id="heroName">Aaliyah Brown</div>
+            <div class="hero-meta" id="heroMeta">Grade 11 · St. Thomas High School · CXC 2026</div>
+            <div class="recovery-pill" id="recoveryPill">⚡ Recovery Plan — Take the diagnostic to activate your plan</div>
+          </div>
+        </div>
+        <div class="prog-row" id="progRow"></div>
+      </div>
+
+      <!-- Exam Countdown -->
+      <div style="background:linear-gradient(135deg,rgba(245,200,66,0.08),rgba(240,148,77,0.05));border:1px solid rgba(245,200,66,0.18);border-radius:14px;padding:14px;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--gold);">📅 Exam Countdown</div>
+          <div style="font-size:10px;color:var(--mist);">CXC 2026 · Auto-synced</div>
+        </div>
+        <div id="examCountdownList"></div>
+        <div style="font-size:10px;color:var(--mist);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04);">📡 Dates from cxc.org · Last synced May 2026</div>
+      </div>
+
+      <!-- Weekly Report -->
+      <div class="sec-title">📊 Weekly Progress Reports</div>
+      <div class="report-card" id="weeklyReportCard"></div>
+
+      <!-- Past reports list -->
+      <div id="pastReportsWrap"></div>
+
+      <div class="sec-title">📋 Today's Schedule</div>
+      <div class="timetable" id="todaySchedule"></div>
+
+      <div class="sec-title">🗓 Weekly Schedule</div>
+      <div class="timetable" id="weekSchedule"></div>
+    </div>
+
+    <!-- CLASSROOM TAB -->
+    <div id="tab-classroom" class="tab-panel">
+      <div class="offline-note">✅ All content below works offline after first load</div>
+      <div id="subjectTabsWrap" style="display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px;"></div>
+      <div id="lessonsWrap"></div>
+
+      <!-- YouTube Videos Section -->
+      <div class="sec-title">▶ Topic Videos</div>
+      <div class="offline-note">📥 Tap a video to cache it for offline use at a community hub</div>
+      <div id="videosWrap"></div>
+    </div>
+
+    <!-- TUTOR TAB -->
+    <div id="tab-tutor" class="tab-panel">
+      <div class="tutor-box">
+        <div class="tutor-header">
+          <div class="tutor-avatar">🤖</div>
+          <div>
+            <div class="tutor-name">Nova — AI Tutor</div>
+            <div class="tutor-status">● Online · CXC & CAPE Specialist</div>
+          </div>
+        </div>
+        <div class="chat-msgs" id="chatMsgs">
+          <div class="msg ai">Hey Aaliyah 👋 I'm Nova. I've reviewed your diagnostic results and your current scores — and I'm here to help you close every gap before your CXC exams.<br><br>Your strongest subject is Caribbean History at 81% — brilliant! Your biggest opportunity right now is Principles of Accounts at 32%. Want me to start there, or is there something specific on your mind?</div>
+        </div>
+        <div class="quick-qs">
+          <div class="qq" onclick="quickQ('Explain quadratic equations in simple terms')">Quadratics help</div>
+          <div class="qq" onclick="quickQ('How do I improve my Accounts score quickly?')">Accounts tips</div>
+          <div class="qq" onclick="quickQ('What topics should I focus on for CXC Biology?')">Biology focus</div>
+          <div class="qq" onclick="quickQ('I feel stressed and behind — what should I do?')">I feel behind</div>
+          <div class="qq" onclick="quickQ('Give me a practice question for English summary writing')">Practice question</div>
+        </div>
+        <div class="chat-input-row">
+          <textarea class="chat-inp" id="chatInp" rows="1" placeholder="Ask Nova anything…" onkeydown="handleKey(event)"></textarea>
+          <button class="send-btn" onclick="sendMsg()">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESOURCES TAB -->
+    <div id="tab-resources" class="tab-panel">
+      <div class="offline-note">🖨 Print at a community hub · 📝 Take as timed quiz</div>
+      <div id="papersWrap"></div>
+
+      <div class="sec-title">🖨 Printable Study Packs</div>
+      <div id="studyPacksWrap"></div>
+    </div>
+
+    <!-- SCHOOL DASHBOARD TAB -->
+    <div id="tab-school" class="tab-panel">
+      <div class="dash-tabs">
+        <button class="dtab active" onclick="switchDash('overview',this)">Overview</button>
+        <button class="dtab" onclick="switchDash('students',this)">Students</button>
+        <button class="dtab" onclick="switchDash('alerts',this)">Alerts</button>
+        <button class="dtab" onclick="switchDash('contact',this)">Contact</button>
+      </div>
+
+      <!-- Overview -->
+      <div id="dash-overview" class="dpanel active">
+        <div style="font-size:12px;color:var(--mist);margin-bottom:12px;">St. Thomas High School · Hurricane Recovery Dashboard</div>
+        <div class="school-stat-row">
+          <div class="sch-stat"><div class="sch-stat-num">47</div><div class="sch-stat-label">Active Students</div></div>
+          <div class="sch-stat"><div class="sch-stat-num">+8%</div><div class="sch-stat-label">Avg. Weekly Gain</div></div>
+          <div class="sch-stat"><div class="sch-stat-num">89%</div><div class="sch-stat-label">Weekly Engagement</div></div>
+          <div class="sch-stat"><div class="sch-stat-num">5</div><div class="sch-stat-label">Need Support</div></div>
+        </div>
+        <div class="report-card">
+          <div class="report-header"><div class="report-title">School Weekly Report</div><div class="report-date">Week 3</div></div>
+          <div class="report-subjects">
+            <div class="rs-row"><div class="rs-name" style="font-size:11px;">Mathematics</div><div class="rs-bar"><div class="rs-fill" style="width:62%;background:linear-gradient(90deg,var(--teal),var(--teal2))"></div></div><div class="rs-pct">62%</div></div>
+            <div class="rs-row"><div class="rs-name" style="font-size:11px;">English A</div><div class="rs-bar"><div class="rs-fill" style="width:71%;background:linear-gradient(90deg,var(--gold),#d4a800)"></div></div><div class="rs-pct" style="color:var(--gold)">71%</div></div>
+            <div class="rs-row"><div class="rs-name" style="font-size:11px;">Biology</div><div class="rs-bar"><div class="rs-fill" style="width:58%;background:linear-gradient(90deg,var(--amber),#d07030)"></div></div><div class="rs-pct" style="color:var(--amber)">58%</div></div>
+            <div class="rs-row"><div class="rs-name" style="font-size:11px;">History</div><div class="rs-bar"><div class="rs-fill" style="width:77%;background:linear-gradient(90deg,var(--purple),#6b5ce7)"></div></div><div class="rs-pct" style="color:var(--purple)">77%</div></div>
+          </div>
+          <div class="report-message" style="margin-top:12px;">"Your students are showing remarkable resilience. 89% have engaged with their plans this week despite ongoing recovery challenges. Mathematics needs the most support — consider a group session at the Morant Bay Hub this Saturday."</div>
+        </div>
+      </div>
+
+      <!-- Students -->
+      <div id="dash-students" class="dpanel">
+        <div style="background:linear-gradient(90deg,rgba(0,217,184,0.07),transparent);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:700;">🏫 St. Thomas High School</div>
+          <div style="font-size:11px;color:var(--mist);">5 students · 2 teachers</div>
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(139,124,248,0.06),transparent);border:1px solid rgba(139,124,248,0.15);border-radius:12px;padding:10px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d07030);display:flex;align-items:center;justify-content:center;font-size:14px;">👩🏽‍🏫</div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;">Ms. Campbell</div><div style="font-size:10px;color:var(--mist);">Teacher · Mathematics</div></div>
+          <div style="font-size:10px;color:var(--purple);background:rgba(139,124,248,0.08);padding:2px 8px;border-radius:7px;">Staff</div>
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(139,124,248,0.06),transparent);border:1px solid rgba(139,124,248,0.15);border-radius:12px;padding:10px 13px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d07030);display:flex;align-items:center;justify-content:center;font-size:14px;">👨🏾‍🏫</div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;">Mr. Blake</div><div style="font-size:10px;color:var(--mist);">Teacher · English A</div></div>
+          <div style="font-size:10px;color:var(--purple);background:rgba(139,124,248,0.08);padding:2px 8px;border-radius:7px;">Staff</div>
+        </div>
+        <div id="teacher-view-students" style="display:none;">
+          <div class="student-row"><div class="stu-avatar">👩🏾</div><div class="stu-info"><div class="stu-name">Aaliyah Brown</div><div class="stu-meta">Grade 11 · 5 subjects · <span style="color:var(--green)">● Active today</span></div></div><div class="stu-score"><div class="stu-pct">69%</div><div class="stu-trend">↑ +6%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👦🏽</div><div class="stu-info"><div class="stu-name">Marcus Reid</div><div class="stu-meta">Grade 11 · 6 subjects · <span style="color:var(--green)">● Active today</span></div></div><div class="stu-score"><div class="stu-pct">74%</div><div class="stu-trend">↑ +9%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👧🏿</div><div class="stu-info"><div class="stu-name">Kezia Thompson</div><div class="stu-meta">Grade 11 · 5 subjects · <span style="color:var(--mist)">○ 2 days ago</span></div></div><div class="stu-score"><div class="stu-pct">58%</div><div class="stu-trend" style="color:var(--amber)">↑ +3%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👦🏾</div><div class="stu-info"><div class="stu-name">Damion Clarke</div><div class="stu-meta">Grade 11 · 4 subjects · <span style="color:var(--red)">○ 5 days ago</span></div></div><div class="stu-score"><div class="stu-pct" style="color:var(--red)">41%</div><div class="stu-trend" style="color:var(--mist)">— 0%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👩🏽</div><div class="stu-info"><div class="stu-name">Shanice Morgan</div><div class="stu-meta">Grade 11 · 5 subjects · <span style="color:var(--green)">● Active today</span></div></div><div class="stu-score"><div class="stu-pct">82%</div><div class="stu-trend">↑ +11%</div></div></div>
+        </div>
+        <div id="student-view-students">
+          <div class="student-row"><div class="stu-avatar">👩🏾</div><div class="stu-info"><div class="stu-name">Aaliyah Brown</div><div class="stu-meta">Grade 11 · <span style="color:var(--green)">● Online now</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👦🏽</div><div class="stu-info"><div class="stu-name">Marcus Reid</div><div class="stu-meta">Grade 11 · <span style="color:var(--green)">● Online now</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👧🏿</div><div class="stu-info"><div class="stu-name">Kezia Thompson</div><div class="stu-meta">Grade 11 · <span style="color:var(--mist)">○ Offline</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👦🏾</div><div class="stu-info"><div class="stu-name">Damion Clarke</div><div class="stu-meta">Grade 11 · <span style="color:var(--mist)">○ Offline</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👩🏽</div><div class="stu-info"><div class="stu-name">Shanice Morgan</div><div class="stu-meta">Grade 11 · <span style="color:var(--green)">● Online now</span></div></div></div>
+        </div>
+        <div id="otherSchoolBlock">
+        <div style="background:linear-gradient(90deg,rgba(0,217,184,0.07),transparent);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin:12px 0 8px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:700;">🏫 Morant Bay High School</div>
+          <div style="font-size:11px;color:var(--mist);">2 students · 1 teacher</div>
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(139,124,248,0.06),transparent);border:1px solid rgba(139,124,248,0.15);border-radius:12px;padding:10px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d07030);display:flex;align-items:center;justify-content:center;font-size:14px;">👨🏾‍🏫</div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;">Mr. Watson</div><div style="font-size:10px;color:var(--mist);">Teacher · Mathematics / Physics</div></div>
+          <div style="font-size:10px;color:var(--purple);background:rgba(139,124,248,0.08);padding:2px 8px;border-radius:7px;">Staff</div>
+        </div>
+        <div id="teacher-view-mb" style="display:none;">
+          <div class="student-row"><div class="stu-avatar">👦🏿</div><div class="stu-info"><div class="stu-name">Leroy Williams</div><div class="stu-meta">Grade 11 · 3 subjects · <span style="color:var(--red)">○ 8 days ago</span></div></div><div class="stu-score"><div class="stu-pct" style="color:var(--red)">29%</div><div class="stu-trend" style="color:var(--red)">↓ −2%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👧🏽</div><div class="stu-info"><div class="stu-name">Tricia James</div><div class="stu-meta">Grade 10 · 4 subjects · <span style="color:var(--green)">● Active today</span></div></div><div class="stu-score"><div class="stu-pct">65%</div><div class="stu-trend">↑ +5%</div></div></div>
+        </div>
+        <div id="student-view-mb">
+          <div class="student-row"><div class="stu-avatar">👦🏿</div><div class="stu-info"><div class="stu-name">Leroy Williams</div><div class="stu-meta">Grade 11 · <span style="color:var(--mist)">○ Offline</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👧🏽</div><div class="stu-info"><div class="stu-name">Tricia James</div><div class="stu-meta">Grade 10 · <span style="color:var(--green)">● Online now</span></div></div></div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <div id="dash-alerts" class="dpanel">
+        <div class="alert-item">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-text">
+            <strong>Damion Clarke</strong> has not logged in for 5 days. His Accounts score has stalled at 41%. He may need additional support or home visit.
+            <br><button class="contact-btn" onclick="showToast('Message sent to Damion Clarke ✅')">📨 Contact Student</button>
+          </div>
+        </div>
+        <div class="alert-item">
+          <div class="alert-icon">🔴</div>
+          <div class="alert-text">
+            <strong>Leroy Williams</strong> has been inactive for 8 days and his average score has dropped. Family may be still displaced. Urgent follow-up recommended.
+            <br><button class="contact-btn" onclick="showToast('Alert sent to school admin ✅')">🚨 Flag to Admin</button>
+          </div>
+        </div>
+        <div class="alert-item" style="background:rgba(245,200,66,0.05);border-color:rgba(245,200,66,0.15);">
+          <div class="alert-icon">📊</div>
+          <div class="alert-text" style="color:#f5e8a0;">
+            <strong>Biology class average (58%)</strong> is below target. 12 students score under 50%. Consider a focused Biology session at the community hub this week.
+            <br><button class="contact-btn" style="background:rgba(245,200,66,0.1);color:var(--gold);" onclick="showToast('Hub session scheduled ✅')">📅 Schedule Hub Session</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div id="dash-contact" class="dpanel">
+        <div style="font-size:13px;color:var(--mist);margin-bottom:14px;line-height:1.5;">Send messages, progress reports and encouragement directly to students or their families.</div>
+        <div class="form-group"><label>Send To</label>
+          <select id="contactSendTo">
+            <option value="teacher">Ms. Campbell — Mathematics Teacher</option>
+            <option value="teacher">Mr. Blake — English A Teacher</option>
+            <option value="teacher">Ms. Reid — Accounts / Biology Teacher</option>
+            <option value="principal">Principal — St. Thomas High School</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Select Report to Send</label>
+          <select>
+            <option>Week 3 Progress Report — May 12–18</option>
+            <option>Week 2 Progress Report — May 5–11</option>
+            <option>Week 1 Progress Report — Apr 28 – May 4</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Message</label>
+          <textarea style="min-height:100px;font-size:13px;" placeholder="Write your message here…">Dear student, we wanted to check in on you this week and let you know that your school community is here to support you through your recovery. You are doing an amazing job — keep going! 💙</textarea>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Message sent successfully ✅')" style="margin-top:0;">📨 Send Message</button>
+        <button class="btn btn-ghost" style="margin-top:8px;" onclick="showToast('Report emailed to all teachers ✅')">📊 Email Weekly Report to Teachers</button>
+      </div>
+    </div>
+
+  </div><!-- /app-wrap -->
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home',this)"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item" onclick="switchTab('classroom',this)"><div class="nav-icon">📚</div><div class="nav-label">Learn</div></div>
+    <div class="nav-item" onclick="switchTab('tutor',this)"><div class="nav-icon">🤖</div><div class="nav-label">Nova</div></div>
+    <div class="nav-item" onclick="switchTab('resources',this)"><div class="nav-icon">📄</div><div class="nav-label">Papers</div></div>
+    <div class="nav-item" onclick="switchTab('school',this)"><div class="nav-icon">🏫</div><div class="nav-label">School</div></div>
+  </div>
+</div>
+
+<!-- LESSON MODAL -->
+<div class="modal-overlay" id="lessonModal" onclick="closeModals(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-sub" id="mSub"></div>
+    <div class="modal-section-title">What you'll learn</div>
+    <div class="modal-content" id="mContent"></div>
+    <div class="modal-section-title">🤖 Nova's tip for you</div>
+    <div class="encourage-box" id="mTip"></div>
+    <div class="modal-section-title">📅 Timetable Slot</div>
+    <div class="modal-content" id="mSchedule"></div>
+    <button class="modal-btn" onclick="completeLesson()">▶ Start Lesson</button>
+  </div>
+</div>
+
+<!-- ENCOURAGEMENT OVERLAY -->
+<div class="encourage-overlay" id="encOverlay">
+  <div class="encourage-card">
+    <div class="enc-emoji">🎉</div>
+    <div class="enc-title">Lesson Complete!</div>
+    <div class="enc-score" id="encScore">+4%</div>
+    <div class="enc-sub">Score improvement this session</div>
+    <div class="enc-msg" id="encMsg">Amazing work, Aaliyah! Every lesson you complete is a bridge between where you are and where you need to be. You're building something real. Keep going! 🌟</div>
+    <button class="enc-btn" onclick="closeEnc()">Continue Learning →</button>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div id="profileCenter" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:150;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);" onclick="closeProfile(event)">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-width:430px;animation:slideUp .3s ease;max-height:85vh;overflow-y:auto;">
+    <div style="width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);margin:0 auto 14px;"></div>
+    <div style="text-align:center;margin-bottom:16px;">
+      <div id="profileAvatar" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px;">👩🏾‍🎓</div>
+      <div id="profileName" style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;">Aaliyah Brown</div>
+      <div id="profileRole" style="font-size:12px;color:var(--mist);margin-top:2px;">Student</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:14px;padding:14px;margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="font-size:12px;color:var(--mist);">Age</span><span id="profileAge" style="font-size:12px;font-weight:600;">16</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="font-size:12px;color:var(--mist);">School</span><span id="profileSchool" style="font-size:12px;font-weight:600;">St. Thomas High School</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="font-size:12px;color:var(--mist);">Grade / Year</span><span id="profileGrade" style="font-size:12px;font-weight:600;">Grade 11</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="font-size:12px;color:var(--mist);">Subjects</span><span id="profileSubjects" style="font-size:12px;font-weight:600;text-align:right;max-width:200px;">Mathematics, English A, Biology, Caribbean History, Principles of Accounts</span></div>
+    </div>
+    <button class="btn btn-primary" onclick="closeProfile(event,true);showToast('Opening Week 3 progress report…')">📊 View Weekly Progress Reports</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="document.getElementById('profileCenter').style.display='none'">Close</button>
+  </div>
+</div>
+
+
+<div id="notifCenter" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:150;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);" onclick="closeNotifCenter(event)">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-width:430px;animation:slideUp .3s ease;max-height:80vh;overflow-y:auto;">
+    <div style="width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);margin:0 auto 14px;"></div>
+    <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin-bottom:14px;">Notifications</div>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--mist);font-weight:700;margin-bottom:7px;">Today — May 23, 2026</div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(0,217,184,0.05);border:1px solid rgba(0,217,184,0.1);border-radius:10px;margin-bottom:5px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">📊</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Week 3 Progress Report Ready</div><div style="font-size:11px;color:var(--mist);">You've gained +6% across all subjects this week.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">9:00 AM</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(0,217,184,0.05);border:1px solid rgba(0,217,184,0.1);border-radius:10px;margin-bottom:5px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">⏰</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Exam Alert — Mathematics</div><div style="font-size:11px;color:var(--mist);">Your CXC Mathematics exam is very soon. Review quadratics today.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">8:00 AM</div>
+    </div>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--mist);font-weight:700;margin:12px 0 7px;">Yesterday — May 22, 2026</div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:10px;margin-bottom:5px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">✅</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Lesson Completed</div><div style="font-size:11px;color:var(--mist);">You completed Caribbean History — Independence Movements. +5% added.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">4:30 PM</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:10px;margin-bottom:5px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">👩🏽‍🏫</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Teacher Comment</div><div style="font-size:11px;color:var(--mist);">Ms. Campbell left a comment on your Accounts lesson plan.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">2:15 PM</div>
+    </div>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--mist);font-weight:700;margin:12px 0 7px;">May 20, 2026</div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:10px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">📅</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">CXC Timetable Updated</div><div style="font-size:11px;color:var(--mist);">Official exam dates fetched from cxc.org and added to your calendar.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">10:00 AM</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const CLAUDE_MODEL = "claude-sonnet-4-20250514";
+let appRole = 'student';
+let pfpDataUrl = null;
+const signupDate = new Date();
+let selectedSubjects = [];
+let mySchool = 'St. Thomas High School';
+let diagnosticDone = false;
+let subjectResults = {}; // {subject: {overall, topics:[{name,score,label,...topicData}]}}
+
+// ===== SUBJECT SYLLABUS DATA (CXC/CSEC-aligned) =====
+const SUBJECT_TOPICS = {
+ 'Mathematics': [
+  {name:'Number Theory & Computation', video:{t:'Number Theory - CSEC Maths Revision', u:'https://www.youtube.com/results?search_query=CSEC+Mathematics+Number+Theory'},
+   notes:['Factors, multiples, primes, HCF and LCM','Directed numbers and order of operations (BODMAS)','Standard form (scientific notation)','Number bases, especially base 2 and base 5'],
+   practice:['Find the HCF and LCM of 24 and 36.','Write 0.000456 in standard form.','Convert 101101₂ to base 10.']},
+  {name:'Consumer Arithmetic', video:{t:'Consumer Arithmetic - CSEC Maths', u:'https://www.youtube.com/results?search_query=CSEC+Mathematics+Consumer+Arithmetic'},
+   notes:['Profit, loss, discount and percentage change','Simple and compound interest formulas','Currency conversion and hire purchase','Wages, salaries, taxes and utility bills'],
+   practice:['A radio is bought for $4,000 and sold for $4,800. Find the % profit.','Calculate the compound interest on $5,000 at 6% for 2 years.','A worker earns $850/week plus 5% commission on $2,000 sales — find total pay.']},
+  {name:'Algebra', video:{t:'Algebra & Quadratics - CSEC Maths', u:'https://www.youtube.com/results?search_query=CSEC+Mathematics+Algebra+quadratics'},
+   notes:['Simplifying and factorising expressions','Solving linear and quadratic equations','Substitution and changing the subject of a formula','Simultaneous equations (algebraic and graphical)'],
+   practice:['Factorise x² + 5x + 6.','Solve 2x² − 8x = 0.','Solve the simultaneous equations 2x + y = 7 and x − y = 2.']},
+  {name:'Geometry & Mensuration', video:{t:'Geometry & Mensuration - CSEC Maths', u:'https://www.youtube.com/results?search_query=CSEC+Mathematics+geometry+mensuration'},
+   notes:['Angles in polygons and circle theorems','Area, perimeter, volume and surface area','Similarity and congruency of shapes','Constructions and loci'],
+   practice:['Find the sum of interior angles of a regular hexagon.','Calculate the volume of a cylinder with radius 7cm and height 10cm.','Two triangles are similar — if one side ratio is 2:3, find the area ratio.']},
+  {name:'Statistics & Probability', video:{t:'Statistics & Probability - CSEC Maths', u:'https://www.youtube.com/results?search_query=CSEC+Mathematics+statistics+probability'},
+   notes:['Mean, median, mode and range','Frequency tables, histograms and cumulative frequency curves','Probability of single and combined events','Tree diagrams and sample space'],
+   practice:['Find the mean of 4, 7, 9, 12, 18.','A bag has 4 red and 6 blue balls — find P(red).','Draw a sample space for tossing two coins and find P(two heads).']},
+  {name:'Functions, Relations & Graphs', video:{t:'Functions and Graphs - CSEC Maths', u:'https://www.youtube.com/results?search_query=CSEC+Mathematics+functions+graphs'},
+   notes:['Mapping diagrams, domain and range','Linear and quadratic graphs — gradient and intercepts','Graphing parabolas: vertex, axis of symmetry, roots','Travel graphs and rate of change'],
+   practice:['Find the gradient of the line through (2,3) and (6,11).','Sketch y = x² − 4x + 3, showing the roots and turning point.','A car travels at 60km/h for 2 hours — sketch a distance-time graph.']}
+ ],
+ 'English A': [
+  {name:'Summary Writing', video:{t:'CXC English A Summary Writing - 8 Step Method', u:'https://www.youtube.com/results?search_query=CSEC+English+A+summary+writing'},
+   notes:['Identify the purpose and main ideas of the passage','Select only relevant points — exclude examples and repetition','Paraphrase ideas in your own words','Keep within the word limit (usually ~120 words) and use connectors for flow'],
+   practice:['Read a short news article and list its 5 main points.','Rewrite a paragraph in your own words without changing its meaning.','Summarise a 300-word passage in 100 words.']},
+  {name:'Comprehension Skills', video:{t:'CXC English A Comprehension Skills', u:'https://www.youtube.com/results?search_query=CSEC+English+A+comprehension+skills'},
+   notes:['Distinguish fact from opinion','Identify tone, mood and writer\'s purpose','Make inferences and draw conclusions from context','Understand figurative language: simile, metaphor, irony'],
+   practice:['Identify two examples of figurative language in a given poem extract.','Explain the writer\'s tone in a persuasive passage.','State one inference you can make about a character from their actions.']},
+  {name:'Narrative & Descriptive Writing', video:{t:'CXC English A Narrative Writing', u:'https://www.youtube.com/results?search_query=CSEC+English+A+narrative+writing'},
+   notes:['Plan a story with a clear beginning, middle and end','Use sensory details to create vivid description','Vary sentence structure for pace and effect','Maintain a consistent point of view and tense'],
+   practice:['Write the opening paragraph of a story titled "The Storm".','Describe a busy market scene using at least 3 senses.','Continue a story so that it builds to a clear climax.']},
+  {name:'Argumentative & Persuasive Writing', video:{t:'CXC English A Argumentative Writing', u:'https://www.youtube.com/results?search_query=CSEC+English+A+argumentative+essay'},
+   notes:['State a clear thesis/position in the introduction','Support points with evidence and examples','Address counter-arguments','Use persuasive techniques: rhetorical questions, repetition, emotive language'],
+   practice:['Write a thesis statement for: "Social media does more harm than good."','List 3 counter-arguments to a position and how you would respond.','Write a persuasive paragraph encouraging recycling in schools.']},
+  {name:'Grammar & Language Use', video:{t:'CXC English A Grammar Essentials', u:'https://www.youtube.com/results?search_query=CSEC+English+A+grammar+revision'},
+   notes:['Subject-verb agreement and tense consistency','Correct use of punctuation (commas, semicolons, apostrophes)','Sentence types: simple, compound, complex','Common errors: pronoun reference, dangling modifiers'],
+   practice:['Correct the tense errors in a short paragraph.','Combine two simple sentences into a complex sentence.','Identify and fix a subject-verb agreement error.']},
+  {name:'Vocabulary & Register', video:{t:'CXC English A Vocabulary and Register', u:'https://www.youtube.com/results?search_query=CSEC+English+A+register+and+vocabulary'},
+   notes:['Formal vs informal register and when to use each','Standard English vs Creole — code-switching appropriately','Using context clues to determine word meaning','Building academic vocabulary for essays'],
+   practice:['Rewrite an informal sentence in formal register.','Give a synonym and antonym for "reluctant".','Identify the register of a given letter and justify your answer.']}
+ ],
+ 'Biology': [
+  {name:'Cell Structure & Organisation', video:{t:'Cell Structure - CXC Biology', u:'https://www.youtube.com/results?search_query=CSEC+Biology+cell+structure'},
+   notes:['Plant vs animal cell structure and functions of organelles','Levels of organisation: cell → tissue → organ → system','Diffusion, osmosis and active transport across membranes','Using and interpreting microscope diagrams'],
+   practice:['List 3 differences between plant and animal cells.','Explain osmosis using a worked example with concentration gradients.','Label a diagram of an animal cell.']},
+  {name:'Life Processes: Nutrition & Respiration', video:{t:'Nutrition and Respiration - CXC Biology', u:'https://www.youtube.com/results?search_query=CSEC+Biology+nutrition+respiration'},
+   notes:['Human digestive system — organs and enzymes','Aerobic vs anaerobic respiration, word equations','Photosynthesis — factors affecting rate','Balanced diet and deficiency diseases'],
+   practice:['Write the word equation for aerobic respiration.','Name 3 factors that affect the rate of photosynthesis.','State the function of bile in digestion.']},
+  {name:'Reproduction & Genetics', video:{t:'Genetics, Mitosis and Meiosis - CXC Biology', u:'https://www.youtube.com/results?search_query=CSEC+Biology+genetics+mitosis+meiosis'},
+   notes:['Mitosis (growth/repair) vs meiosis (gamete formation)','DNA structure and base-pairing rules','Monohybrid crosses and Punnett squares','Dominant, recessive, genotype and phenotype'],
+   practice:['Draw a Punnett square for a cross between Aa x Aa.','Explain why meiosis produces genetic variation.','Define genotype and phenotype with an example.']},
+  {name:'Ecology & the Environment', video:{t:'Ecology - CXC Biology', u:'https://www.youtube.com/results?search_query=CSEC+Biology+ecology+ecosystems'},
+   notes:['Food chains, food webs and energy flow/pyramids','Nutrient cycles: carbon and nitrogen cycles','Effects of human activity: pollution, deforestation','Conservation methods and sustainable use'],
+   practice:['Draw a food chain with 4 organisms from a Caribbean ecosystem.','Explain one human impact on a coral reef.','Describe the carbon cycle in 4 steps.']},
+  {name:'Human Biology & Disease', video:{t:'Human Biology and Disease - CXC Biology', u:'https://www.youtube.com/results?search_query=CSEC+Biology+human+biology+disease'},
+   notes:['Pathogens: bacteria, viruses, fungi and protozoa','Body defences: skin, white blood cells, antibodies','Non-communicable diseases: diabetes, hypertension','Vaccination and immunity'],
+   practice:['Explain how white blood cells defend the body.','Give 2 examples of non-communicable diseases and a risk factor for each.','Describe how vaccination provides immunity.']},
+  {name:'Transport Systems', video:{t:'Transport Systems - CXC Biology', u:'https://www.youtube.com/results?search_query=CSEC+Biology+transport+systems+circulation'},
+   notes:['Structure of the heart and blood vessels','Composition and functions of blood','Transpiration and transport in plants (xylem/phloem)','Circulatory system pathways: pulmonary vs systemic'],
+   practice:['Label the chambers of the heart.','Compare xylem and phloem in terms of structure and function.','Describe the path of blood through the pulmonary circuit.']}
+ ],
+ 'Caribbean History': [
+  {name:'Indigenous Caribbean Societies', video:{t:'Indigenous Peoples of the Caribbean - CXC History', u:'https://www.youtube.com/results?search_query=CXC+Caribbean+History+indigenous+peoples'},
+   notes:['Taino and Kalinago social, political and economic organisation','Settlement patterns and use of the environment','Impact of European contact on indigenous populations','Sources used to study indigenous societies (archaeology, oral tradition)'],
+   practice:['Describe the political organisation of Taino society.','Explain 2 effects of European contact on indigenous peoples.','Name 2 types of evidence historians use to study Taino society.']},
+  {name:'European Expansion & Settlement', video:{t:'European Expansion in the Caribbean - CXC History', u:'https://www.youtube.com/results?search_query=CXC+Caribbean+History+European+expansion'},
+   notes:['Motives for European exploration: God, gold, glory','Spanish, British, French and Dutch colonisation patterns','The encomienda and early labour systems','Rivalries between European powers in the region'],
+   practice:['State 3 motives for European exploration of the Caribbean.','Explain the encomienda system.','Compare Spanish and British approaches to colonisation.']},
+  {name:'Slavery & Slave Society', video:{t:'Slavery in the Caribbean - CXC History', u:'https://www.youtube.com/results?search_query=CXC+Caribbean+History+slavery+plantation+society'},
+   notes:['The Triangular Trade and the Middle Passage','Plantation economy and the sugar revolution','Social structure of slave society (planters, free coloureds, enslaved)','Forms of resistance: day-to-day resistance vs open revolt'],
+   practice:['Describe the conditions of the Middle Passage.','Explain how the sugar revolution changed Caribbean society.','Give 2 examples of day-to-day resistance by enslaved people.']},
+  {name:'Resistance & Revolts', video:{t:'Resistance and Revolts - CXC Caribbean History', u:'https://www.youtube.com/results?search_query=CXC+Caribbean+History+slave+revolts'},
+   notes:['Major revolts: Haitian Revolution, Tacky\'s Revolt, 1831 Jamaica rebellion','Causes and consequences of the Haitian Revolution','Role of Maroons in resistance','Impact of revolts on the abolition movement'],
+   practice:['Explain 2 causes of the Haitian Revolution.','Describe the role of Maroons in Jamaica.','Assess the impact of the 1831 rebellion on the abolition debate.']},
+  {name:'Emancipation & Adjustment', video:{t:'Emancipation in the Caribbean - CXC History', u:'https://www.youtube.com/results?search_query=CXC+Caribbean+History+emancipation+apprenticeship'},
+   notes:['The Apprenticeship system (1834–1838) and its problems','Full emancipation in 1838 and immediate aftermath','Establishment of free villages','Indentureship — Indian and Chinese labour after emancipation'],
+   practice:['Explain why the Apprenticeship system failed.','Describe the establishment of free villages.','State 2 reasons planters turned to indentured labour.']},
+  {name:'The Road to Independence', video:{t:'West Indies Federation and Independence - CXC History', u:'https://www.youtube.com/results?search_query=CXC+Caribbean+History+West+Indies+Federation+independence'},
+   notes:['Formation and collapse of the West Indies Federation (1958–1962)','Key independence leaders: Manley, Bustamante, Williams, Bird','Jamaica\'s independence in 1962 — causes and significance','Formation and goals of CARICOM'],
+   practice:['Explain 2 reasons for the collapse of the West Indies Federation.','Describe the contribution of one independence leader.','State 2 goals of CARICOM.']}
+ ],
+ 'Principles of Accounts': [
+  {name:'Source Documents & Books of Original Entry', video:{t:'Books of Original Entry - CXC POA', u:'https://www.youtube.com/results?search_query=CSEC+Principles+of+Accounts+books+of+original+entry'},
+   notes:['Source documents: invoices, receipts, credit notes, cheques','Day books / journals: sales, purchases, returns, cash book','The accounting equation: Assets = Capital + Liabilities','Double entry — debit and credit rules'],
+   practice:['State the source document used to record a credit sale.','Apply the accounting equation to find capital if assets = $50,000 and liabilities = $12,000.','State the double entry for purchasing goods on credit.']},
+  {name:'The Ledger & Trial Balance', video:{t:'Ledger and Trial Balance - CXC POA', u:'https://www.youtube.com/results?search_query=CSEC+Principles+of+Accounts+ledger+trial+balance'},
+   notes:['Posting from journals to ledger accounts','Balancing off accounts (T-accounts)','Preparing a trial balance from ledger balances','Purpose and limitations of a trial balance'],
+   practice:['Balance off a simple T-account given debit and credit entries.','List the steps to prepare a trial balance.','State one error that a trial balance would NOT detect.']},
+  {name:'Financial Statements', video:{t:'Financial Statements - CXC POA', u:'https://www.youtube.com/results?search_query=CSEC+Principles+of+Accounts+financial+statements'},
+   notes:['Trading account — calculating gross profit','Profit & Loss account — calculating net profit','Balance sheet — assets, liabilities and capital','Classification: current vs fixed assets/liabilities'],
+   practice:['Calculate gross profit given sales, opening/closing stock and purchases.','List 3 expenses that appear in a profit & loss account.','Classify cash, machinery and a 5-year loan as current/fixed.']},
+  {name:'Adjustments to Final Accounts', video:{t:'Adjustments - Depreciation Bad Debts Accruals - CXC POA', u:'https://www.youtube.com/results?search_query=CSEC+Principles+of+Accounts+depreciation+bad+debts+accruals'},
+   notes:['Depreciation: straight-line and reducing balance methods','Bad debts and provision for doubtful debts','Accruals and prepayments','Effect of adjustments on profit and balance sheet'],
+   practice:['Calculate straight-line depreciation on an asset costing $20,000 with 10% rate.','Explain the difference between an accrual and a prepayment.','Show the effect of writing off a bad debt on the balance sheet.']},
+  {name:'Control Systems', video:{t:'Bank Reconciliation and Control Accounts - CXC POA', u:'https://www.youtube.com/results?search_query=CSEC+Principles+of+Accounts+bank+reconciliation+control+accounts'},
+   notes:['Bank reconciliation statements — reasons for differences','Control accounts: sales ledger and purchases ledger','Petty cash book and the imprest system','Errors and their correction (suspense account basics)'],
+   practice:['List 3 reasons a cash book balance may differ from a bank statement.','Explain the purpose of a sales ledger control account.','Describe how the imprest system works for petty cash.']},
+  {name:'Partnerships & Business Ownership', video:{t:'Partnership Accounts Basics - CXC POA', u:'https://www.youtube.com/results?search_query=CSEC+Principles+of+Accounts+partnership+accounts'},
+   notes:['Types of business ownership: sole trader, partnership, company','Partnership agreements: profit-sharing ratios, interest on capital/drawings','Appropriation account basics','Differences in capital accounts for partnerships'],
+   practice:['State 2 differences between a sole trader and a partnership.','Share a profit of $60,000 between two partners in a 2:1 ratio.','Explain the purpose of an appropriation account.']}
+ ]
+};
+const GENERIC_TOPICS = ['Foundation Concepts & Terminology','Core Processes & Methods','Application & Problem Solving','Practical Skills & Techniques','Exam Technique & Past Paper Practice'];
+
+// ===== DIAGNOSTIC QUESTION BANKS =====
+// Mathematics: 30 computed/real CSEC-style questions, 5 per topic
+const DIAG_BANK = {
+ 'Mathematics': [
+  {topic:'Number Theory & Computation', q:'Find the HCF of 24 and 36.', opts:['6','12','8','4'], correct:1},
+  {topic:'Number Theory & Computation', q:'Find the LCM of 4 and 6.', opts:['10','24','12','8'], correct:2},
+  {topic:'Number Theory & Computation', q:'Write 0.00056 in standard form.', opts:['5.6 × 10⁻⁴','5.6 × 10⁴','5.6 × 10⁻³','0.56 × 10⁻³'], correct:0},
+  {topic:'Number Theory & Computation', q:'Evaluate 3 + 4 × 2 − 1 using BODMAS.', opts:['13','10','9','14'], correct:0},
+  {topic:'Number Theory & Computation', q:'Convert 101₂ to base 10.', opts:['3','5','6','7'], correct:1},
+  {topic:'Consumer Arithmetic', q:'A radio bought for $4,000 is sold for $4,800. Find the % profit.', opts:['16%','20%','25%','80%'], correct:1},
+  {topic:'Consumer Arithmetic', q:'Find the simple interest on $2,000 at 5% per annum for 3 years.', opts:['$100','$200','$300','$400'], correct:2},
+  {topic:'Consumer Arithmetic', q:'A jacket marked $1,200 is sold at a 15% discount. Find the sale price.', opts:['$1,020','$1,080','$1,170','$180'], correct:1},
+  {topic:'Consumer Arithmetic', q:'Convert $300 USD to JMD at a rate of 1 USD = 155 JMD.', opts:['$30,500','$45,500','$46,500','$155,000'], correct:2},
+  {topic:'Consumer Arithmetic', q:'A worker earns a basic wage of $800 plus 10% commission on $1,500 sales. Find total pay.', opts:['$815','$950','$1,500','$800'], correct:1},
+  {topic:'Algebra', q:'Factorise x² + 5x + 6.', opts:['(x+1)(x+6)','(x+2)(x+3)','(x−2)(x−3)','(x+6)(x−1)'], correct:1},
+  {topic:'Algebra', q:'Solve 2x² − 8x = 0.', opts:['x = 0 or x = 4','x = 0 or x = −4','x = 2 or x = 4','x = 0 only'], correct:0},
+  {topic:'Algebra', q:'Simplify 3(x + 2) − 2(x − 1).', opts:['x + 4','x + 8','5x + 4','x − 4'], correct:1},
+  {topic:'Algebra', q:'If y = 3x − 2, find x when y = 10.', opts:['2','3','4','12'], correct:2},
+  {topic:'Algebra', q:'Solve the simultaneous equations 2x + y = 7 and x − y = 2.', opts:['x=3, y=1','x=2, y=3','x=1, y=5','x=4, y=−1'], correct:0},
+  {topic:'Geometry & Mensuration', q:'Find the sum of interior angles of a hexagon.', opts:['360°','540°','720°','900°'], correct:2},
+  {topic:'Geometry & Mensuration', q:'Find the area of a circle with radius 7cm (use π ≈ 22/7).', opts:['154 cm²','44 cm²','22 cm²','308 cm²'], correct:0},
+  {topic:'Geometry & Mensuration', q:'A cuboid has dimensions 4cm × 3cm × 5cm. Find its volume.', opts:['60 cm³','12 cm³','35 cm³','20 cm³'], correct:0},
+  {topic:'Geometry & Mensuration', q:'Two similar triangles have a side ratio of 2:3. Find the ratio of their areas.', opts:['2:3','4:6','4:9','8:27'], correct:2},
+  {topic:'Geometry & Mensuration', q:'Find the circumference of a circle with diameter 14cm (use π ≈ 22/7).', opts:['22 cm','44 cm','88 cm','308 cm'], correct:1},
+  {topic:'Statistics & Probability', q:'Find the mean of 4, 7, 9, 12, 18.', opts:['9','10','11','50'], correct:1},
+  {topic:'Statistics & Probability', q:'Find the median of 3, 7, 9, 12, 15.', opts:['7','9','12','15'], correct:1},
+  {topic:'Statistics & Probability', q:'A bag has 4 red and 6 blue balls. Find P(red).', opts:['1/2','2/5','3/5','1/10'], correct:1},
+  {topic:'Statistics & Probability', q:'Two coins are tossed. Find P(two heads).', opts:['1/2','1/3','1/4','2/3'], correct:2},
+  {topic:'Statistics & Probability', q:'Find the range of the data set: 5, 8, 12, 3, 20.', opts:['12','15','17','20'], correct:2},
+  {topic:'Functions, Relations & Graphs', q:'Find the gradient of the line through (2,3) and (6,11).', opts:['1/2','2','4','3'], correct:1},
+  {topic:'Functions, Relations & Graphs', q:'For the function f(x) = 2x + 1, find f(3).', opts:['5','6','7','9'], correct:2},
+  {topic:'Functions, Relations & Graphs', q:'The graph of y = x² − 4x + 3 crosses the x-axis at x = 1 and x = ?', opts:['2','3','4','−3'], correct:1},
+  {topic:'Functions, Relations & Graphs', q:'A car travels at constant speed of 60 km/h. How far does it travel in 2.5 hours?', opts:['120 km','150 km','100 km','24 km'], correct:1},
+  {topic:'Functions, Relations & Graphs', q:'Which type of relation maps every input to exactly one output?', opts:['One-to-many','Many-to-many','A function','None of these'], correct:2}
+ ],
+ 'English A': [
+  {topic:'Summary Writing', q:'The main purpose of a summary is to:', opts:['Copy the most interesting sentences','Present the main ideas in your own words, concisely','Add your own opinion to the passage','Rewrite the passage in full'], correct:1},
+  {topic:'Summary Writing', q:'When summarising, you should generally:', opts:['Include examples and illustrations in detail','Exclude repetition and minor examples','Keep all quotations from the original','Write more than the original passage'], correct:1},
+  {topic:'Comprehension Skills', q:'"The old house groaned under the weight of years" is an example of:', opts:['Simile','Personification','Onomatopoeia','Hyperbole'], correct:1},
+  {topic:'Comprehension Skills', q:'An inference is best described as:', opts:['A fact directly stated in the text','A conclusion drawn from evidence and clues','The title of the passage','A direct quotation'], correct:1},
+  {topic:'Narrative & Descriptive Writing', q:'A story\'s climax usually refers to:', opts:['The opening description','The point of highest tension or turning point','The list of characters','The title'], correct:1},
+  {topic:'Narrative & Descriptive Writing', q:'Using sensory details (sight, sound, smell etc.) in writing primarily helps to:', opts:['Shorten the piece','Make the writing more vivid and immersive','Avoid using adjectives','Make the writing more formal'], correct:1},
+  {topic:'Argumentative & Persuasive Writing', q:'A thesis statement in an argumentative essay should:', opts:['List unrelated facts','Clearly state the writer\'s position on the topic','Be placed only in the conclusion','Avoid taking a side'], correct:1},
+  {topic:'Argumentative & Persuasive Writing', q:'Addressing a counter-argument in an essay shows that the writer:', opts:['Is unsure of their position','Has considered other viewpoints and strengthens their case','Should remove their thesis','Is being repetitive'], correct:1},
+  {topic:'Grammar & Language Use', q:'Choose the correctly punctuated sentence:', opts:['"Its raining, lets go inside."','"It\'s raining, let\'s go inside."','"Its raining lets go inside"','"It is raining; lets, go inside."'], correct:1},
+  {topic:'Grammar & Language Use', q:'Which sentence shows correct subject-verb agreement?', opts:['The group of students were late.','The group of students was late.','The group of students is were late.','The group of student were late.'], correct:1},
+  {topic:'Vocabulary & Register', q:'Which is the most formal way to begin a letter to a school principal?', opts:['Hey there,','What\'s up,','Dear Sir/Madam,','Yo Principal,'], correct:2},
+  {topic:'Vocabulary & Register', q:'A word that means the opposite of "reluctant" is:', opts:['Hesitant','Eager','Unwilling','Doubtful'], correct:1}
+ ],
+ 'Biology': [
+  {topic:'Cell Structure & Organisation', q:'Which structure is found in plant cells but NOT animal cells?', opts:['Nucleus','Mitochondria','Cell wall','Cytoplasm'], correct:2},
+  {topic:'Cell Structure & Organisation', q:'The movement of water from a dilute to a concentrated solution across a membrane is called:', opts:['Diffusion','Osmosis','Active transport','Respiration'], correct:1},
+  {topic:'Life Processes: Nutrition & Respiration', q:'The word equation for aerobic respiration produces:', opts:['Glucose + oxygen','Carbon dioxide + water + energy','Oxygen + water only','Glucose only'], correct:1},
+  {topic:'Life Processes: Nutrition & Respiration', q:'Which of these is NOT a factor affecting the rate of photosynthesis?', opts:['Light intensity','Carbon dioxide concentration','Temperature','Blood pressure'], correct:3},
+  {topic:'Reproduction & Genetics', q:'Mitosis results in:', opts:['4 cells with half the chromosomes','2 identical daughter cells','Cells with double the chromosomes','Only sex cells'], correct:1},
+  {topic:'Reproduction & Genetics', q:'In a cross Aa × Aa, what fraction of offspring is expected to be "aa"?', opts:['1/4','1/2','3/4','All'], correct:0},
+  {topic:'Ecology & the Environment', q:'In a food chain, the arrow generally represents:', opts:['"Is eaten by" / flow of energy','Flow of water','Direction of growth','Migration'], correct:0},
+  {topic:'Ecology & the Environment', q:'Deforestation is most directly linked to:', opts:['Increased soil erosion and habitat loss','Decreased carbon dioxide in the atmosphere','Increased ocean salinity','Reduced UV radiation'], correct:0},
+  {topic:'Human Biology & Disease', q:'White blood cells primarily function to:', opts:['Carry oxygen','Defend the body against pathogens','Clot blood','Digest food'], correct:1},
+  {topic:'Human Biology & Disease', q:'Diabetes is an example of a:', opts:['Communicable disease','Non-communicable disease','Genetic mutation only','Vector-borne disease'], correct:1},
+  {topic:'Transport Systems', q:'Which blood vessel carries blood AWAY from the heart?', opts:['Vein','Artery','Capillary only','Lymph vessel'], correct:1},
+  {topic:'Transport Systems', q:'In plants, water and minerals are transported mainly through the:', opts:['Phloem','Xylem','Stomata','Cuticle'], correct:1}
+ ],
+ 'Caribbean History': [
+  {topic:'Indigenous Caribbean Societies', q:'The Taino people were primarily organised under leaders known as:', opts:['Caciques','Encomenderos','Maroons','Buccaneers'], correct:0},
+  {topic:'Indigenous Caribbean Societies', q:'A major effect of European contact on indigenous populations was:', opts:['Population growth','Sharp population decline due to disease and forced labour','Immediate independence','Migration to Europe'], correct:1},
+  {topic:'European Expansion & Settlement', q:'A key motive for European exploration of the Caribbean was:', opts:['Search for gold and new trade routes','Desire to learn local languages','To avoid taxes','To return indigenous land'], correct:0},
+  {topic:'European Expansion & Settlement', q:'The encomienda system involved:', opts:['Free wage labour for Europeans','Granting Spanish colonists control over indigenous labour and tribute','A trade union for workers','Abolition of slavery'], correct:1},
+  {topic:'Slavery & Slave Society', q:'The "Middle Passage" refers to:', opts:['The journey of enslaved Africans across the Atlantic','A road in Jamaica','The route from farm to market','A type of plantation crop'], correct:0},
+  {topic:'Slavery & Slave Society', q:'An example of "day-to-day resistance" by enslaved people was:', opts:['Armed revolt','Working slowly or feigning illness','Signing petitions','Voting in elections'], correct:1},
+  {topic:'Resistance & Revolts', q:'The Haitian Revolution resulted in:', opts:['Continued French rule','The first independent black republic in the Caribbean','Re-enslavement of all Haitians','No major changes'], correct:1},
+  {topic:'Resistance & Revolts', q:'Maroons were:', opts:['European plantation owners','Enslaved Africans who escaped and formed independent communities','Colonial governors','Indentured labourers'], correct:1},
+  {topic:'Emancipation & Adjustment', q:'The Apprenticeship system (1834–1838) required former slaves to:', opts:['Leave the Caribbean','Continue working for former owners for a transition period','Immediately receive land','Join the military'], correct:1},
+  {topic:'Emancipation & Adjustment', q:'After emancipation, planters addressed labour shortages mainly through:', opts:['Raising wages significantly','Indentureship from India and China','Closing plantations','Mechanisation only'], correct:1},
+  {topic:'The Road to Independence', q:'The West Indies Federation (1958–1962) ultimately:', opts:['Became a permanent union','Collapsed before achieving lasting political union','Was renamed CARICOM','Never began'], correct:1},
+  {topic:'The Road to Independence', q:'CARICOM was formed mainly to promote:', opts:['Military alliances','Regional economic integration and cooperation','A single Caribbean monarchy','Reversal of independence'], correct:1}
+ ],
+ 'Principles of Accounts': [
+  {topic:'Source Documents & Books of Original Entry', q:'The source document used to record a credit sale to a customer is a(n):', opts:['Receipt','Invoice','Cheque counterfoil','Credit note'], correct:1},
+  {topic:'Source Documents & Books of Original Entry', q:'The accounting equation is:', opts:['Assets = Capital − Liabilities','Assets = Capital + Liabilities','Capital = Assets + Liabilities','Liabilities = Assets + Capital'], correct:1},
+  {topic:'The Ledger & Trial Balance', q:'A trial balance is prepared to:', opts:['Show profit directly','Check that total debits equal total credits','Replace the balance sheet','Record cash payments only'], correct:1},
+  {topic:'The Ledger & Trial Balance', q:'An error that would NOT be revealed by a trial balance is:', opts:['A one-sided entry','Unequal debit and credit totals','An error of complete omission (both entries missing)','Adding a column incorrectly'], correct:2},
+  {topic:'Financial Statements', q:'Gross profit is calculated as:', opts:['Sales − Cost of Goods Sold','Sales + Expenses','Net profit + Expenses','Capital − Drawings'], correct:0},
+  {topic:'Financial Statements', q:'Which of these would appear on a balance sheet as a current asset?', opts:['Motor vehicles','Premises','Cash at bank','5-year bank loan'], correct:2},
+  {topic:'Adjustments to Final Accounts', q:'Straight-line depreciation on a $20,000 asset at 10% per year is:', opts:['$200','$2,000','$20,000','$1,000'], correct:1},
+  {topic:'Adjustments to Final Accounts', q:'Rent paid in advance for next year is an example of:', opts:['An accrual','A prepayment','A bad debt','A contra entry'], correct:1},
+  {topic:'Control Systems', q:'A bank reconciliation statement is prepared to:', opts:['Calculate net profit','Explain differences between the cash book and bank statement balances','Replace the trial balance','Record petty cash only'], correct:1},
+  {topic:'Control Systems', q:'The imprest system is most closely associated with:', opts:['Petty cash','Depreciation','Partnership profit sharing','Bank loans'], correct:0},
+  {topic:'Partnerships & Business Ownership', q:'In a partnership, profits are typically shared according to:', opts:['Equal split regardless of agreement','The profit-sharing ratio agreed by the partners','Government regulation only','Random allocation'], correct:1},
+  {topic:'Partnerships & Business Ownership', q:'An appropriation account is used to:', opts:['Record cash sales','Show how net profit is distributed among partners','Calculate depreciation','List fixed assets'], correct:1}
+ ]
+};
+function genericDiagBank(subject){
+  const qs=[];
+  GENERIC_TOPICS.forEach((topic,ti)=>{
+    for(let i=0;i<2;i++){
+      qs.push({topic, q:`Which of the following best relates to "${topic}" in ${subject}?`,
+        opts:GENERIC_TOPICS.map((t,j)=> j===ti? topic : t).sort(()=>0), correct: ti});
+    }
+  });
+  // Ensure correct option text always matches topic name regardless of order
+  return qs.map(item=>{
+    const opts=[...GENERIC_TOPICS];
+    return {topic:item.topic, q:item.q, opts, correct: GENERIC_TOPICS.indexOf(item.topic)};
+  });
+}
+function getDiagBank(subject){
+  if(DIAG_BANK[subject]) return DIAG_BANK[subject];
+  return genericDiagBank(subject);
+}
+function getTopics(subject){
+  if(SUBJECT_TOPICS[subject]) return SUBJECT_TOPICS[subject];
+  return GENERIC_TOPICS.map(name=>({name, video:{t:`${subject}: ${name}`, u:`https://www.youtube.com/results?search_query=CXC+${encodeURIComponent(subject)}+${encodeURIComponent(name)}`},
+    notes:[`Key definitions and core concepts for ${name.toLowerCase()} in ${subject}.`,`How ${name.toLowerCase()} is typically assessed on CXC/CAPE papers.`,`Common mistakes students make in this area.`],
+    practice:[`Outline the main ideas covered under "${name}" for ${subject}.`,`Give one example of how "${name}" might appear in a CXC exam question.`]}));
+}
+
+function openProfile() {
+  document.getElementById('profileCenter').style.display = 'flex';
+}
+function closeProfile(e, force) {
+  if(force || e.target.id==='profileCenter' || e.target.closest('.btn-ghost')) {
+    document.getElementById('profileCenter').style.display = 'none';
+  }
+}
+
+// ===== ONBOARDING =====
+let currentOBStep = 0;
+function obNext(step) {
+  document.getElementById(`ob-step${currentOBStep}`).classList.remove('active');
+  document.getElementById(`ob-step${step}`).classList.add('active');
+  currentOBStep = step;
+  for (let i=1;i<=5;i++) {
+    document.getElementById(`dot${i}`) && document.getElementById(`dot${i}`).classList.toggle('done', i<=step);
+  }
+}
+function selectRole(r) {
+  appRole = r;
+  const s = document.getElementById('role-student');
+  const t = document.getElementById('role-teacher');
+  if(r==='student'){
+    s.style.background='rgba(0,217,184,0.08)'; s.style.borderColor='rgba(0,217,184,0.4)';
+    t.style.background='rgba(255,255,255,0.04)'; t.style.borderColor='var(--border2)';
+  } else {
+    t.style.background='rgba(0,217,184,0.08)'; t.style.borderColor='rgba(0,217,184,0.4)';
+    s.style.background='rgba(255,255,255,0.04)'; s.style.borderColor='var(--border2)';
+  }
+}
+function handlePfpOB(e) {
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pfpDataUrl = ev.target.result;
+    document.getElementById('pfpPreview').innerHTML = `<img src="${pfpDataUrl}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;">`;
+    showToast('Photo uploaded ✅');
+  };
+  reader.readAsDataURL(f);
+}
+function selectChip(el, group) {
+  el.closest('.chip-group').querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function toggleChip(el) { el.classList.toggle('selected'); }
+
+function finishSignup() {
+  const name = document.getElementById('ob-name').value || 'Student';
+  const school = document.getElementById('ob-school') ? document.getElementById('ob-school').value : 'School';
+  const age = document.getElementById('ob-age') ? document.getElementById('ob-age').value : '16';
+  const grade = document.getElementById('ob-grade') ? document.getElementById('ob-grade').value : 'Grade 11';
+  selectedSubjects = Array.from(document.querySelectorAll('#subject-chips-csec .chip.selected, #subject-chips-cape .chip.selected')).map(c=>c.textContent);
+  if(selectedSubjects.length===0) selectedSubjects=['Mathematics','English A'];
+  mySchool = school;
+
+  document.getElementById('heroName').textContent = name;
+  document.getElementById('heroMeta').textContent = `${grade} · ${school} · CXC 2026`;
+
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileRole').textContent = appRole==='teacher' ? 'Teacher / Educator' : 'Student';
+  document.getElementById('profileAge').textContent = age;
+  document.getElementById('profileSchool').textContent = school;
+  document.getElementById('profileGrade').textContent = grade;
+  document.getElementById('profileSubjects').textContent = selectedSubjects.join(', ');
+
+  if(pfpDataUrl) {
+    ['headerAvatar','heroAvatar','profileAvatar'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.innerHTML=`<img src="${pfpDataUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    });
+  }
+
+  applyRoleUI();
+  renderHome();
+  renderClassroom();
+  renderPapers();
+  showScreen('screen-app');
+  if(appRole!=='teacher') {
+    const banner = document.getElementById('diagBannerWrap');
+    if(banner) banner.style.display = 'block';
+  }
+}
+
+// ===== ROLE-BASED UI =====
+function applyRoleUI() {
+  const novaNav = document.querySelector('.bottom-nav .nav-item:nth-child(3)');
+  const novaTab = document.getElementById('tab-tutor');
+  const teacherStudentBlocks = document.querySelectorAll('[id^="teacher-view-"]');
+  const studentStudentBlocks = document.querySelectorAll('[id^="student-view-"]');
+  const otherSchool = document.getElementById('otherSchoolBlock');
+  if(appRole==='teacher') {
+    if(novaNav) novaNav.style.display='none';
+    if(novaTab) novaTab.classList.remove('active');
+    teacherStudentBlocks.forEach(b=>b.style.display='block');
+    studentStudentBlocks.forEach(b=>b.style.display='none');
+    if(otherSchool) otherSchool.style.display='block';
+    document.querySelectorAll('.dtab') && (document.querySelectorAll('.dash-tabs .dtab')[2] && (document.querySelectorAll('.dash-tabs .dtab')[2].style.display='inline-block'));
+  } else {
+    if(novaNav) novaNav.style.display='';
+    teacherStudentBlocks.forEach(b=>b.style.display='none');
+    studentStudentBlocks.forEach(b=>b.style.display='block');
+    if(otherSchool) otherSchool.style.display='none'; // students see only their own school
+    const alertsTab = document.querySelectorAll('.dash-tabs .dtab')[2];
+    if(alertsTab) alertsTab.style.display='none';
+  }
+}
+
+// ===== SCREENS =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===== DIAGNOSTIC (per-subject, generated from syllabus question banks) =====
+let timerInterval;
+let diagQueue = [];
+let diagIndex = 0;
+let diagAnswers = {};
+function startTimer(seconds) {
+  let s = seconds;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    s--;
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = (s%60).toString().padStart(2,'0');
+    const t=document.getElementById('diagTimer');
+    if(t) t.textContent = `${m}:${sec}`;
+    if (s<=0) clearInterval(timerInterval);
+  }, 1000);
+}
+function startDiagnostic() {
+  diagQueue = [...selectedSubjects];
+  diagIndex = 0;
+  diagAnswers = {};
+  renderDiagSubject();
+  showScreen('screen-diagnostic');
+  startTimer(45*60);
+}
+function renderDiagSubject() {
+  const subject = diagQueue[diagIndex];
+  const bank = getDiagBank(subject);
+  diagAnswers[subject] = new Array(bank.length).fill(null);
+  document.getElementById('diagSubjLabel').textContent = `${subject} — Diagnostic (${bank.length} questions)`;
+  let html = `<div class="section-badge">📝 ${subject} — CXC/CAPE-style Diagnostic</div>`;
+  bank.forEach((q,i)=>{
+    html += `<div class="q-card"><div class="q-num">Question ${i+1} of ${bank.length} · ${q.topic}</div><div class="q-text">${q.q}</div><div class="q-options">`;
+    q.opts.forEach((opt,j)=>{
+      html += `<div class="q-opt" onclick="selectDiagOpt(this,${i},${j})"><div class="opt-letter">${String.fromCharCode(65+j)}</div>${opt}</div>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('diagBody').innerHTML = html;
+  const btn = document.getElementById('diagActionBtn');
+  btn.textContent = (diagIndex < diagQueue.length-1) ? `Submit & Next Subject →` : 'Submit & View My Plan →';
+  btn.onclick = diagNextSubject;
+  window.scrollTo(0,0);
+}
+function selectDiagOpt(el,qi,oi) {
+  el.closest('.q-options').querySelectorAll('.q-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  diagAnswers[diagQueue[diagIndex]][qi]=oi;
+}
+function scoreSubject(subject) {
+  const bank = getDiagBank(subject);
+  const topics = getTopics(subject);
+  const topicStats = {};
+  topics.forEach(t=>topicStats[t.name]={correct:0,total:0});
+  bank.forEach((q,i)=>{
+    if(!topicStats[q.topic]) topicStats[q.topic]={correct:0,total:0};
+    topicStats[q.topic].total++;
+    if(diagAnswers[subject][i]===q.correct) topicStats[q.topic].correct++;
+  });
+  const topicResults = topics.map(t=>{
+    const st = topicStats[t.name]||{correct:0,total:1};
+    const pct = st.total? Math.round(st.correct/st.total*100):0;
+    const label = pct<40?'priority':(pct<70?'attention':'normal');
+    return {name:t.name, score:pct, label};
+  });
+  const overall = Math.round(topicResults.reduce((a,t)=>a+t.score,0)/topicResults.length);
+  subjectResults[subject] = {overall, topics:topicResults};
+}
+function diagNextSubject() {
+  scoreSubject(diagQueue[diagIndex]);
+  if(diagIndex < diagQueue.length-1) {
+    diagIndex++;
+    renderDiagSubject();
+  } else {
+    finishDiagnostic();
+  }
+}
+function finishDiagnostic() {
+  clearInterval(timerInterval);
+  diagnosticDone = true;
+  const banner = document.getElementById('diagBannerWrap');
+  if(banner) banner.style.display='none';
+
+  const examInput = document.getElementById('ob-examdate');
+  let totalWeeks = 6;
+  if(examInput && examInput.value) {
+    const examDate = new Date(examInput.value);
+    totalWeeks = Math.max(1, Math.ceil((examDate - signupDate) / (7*24*60*60*1000)));
+  }
+  document.getElementById('recoveryPill').textContent = `⚡ Recovery Plan Active — Week 1 of ${totalWeeks}`;
+
+  renderHome();
+  renderClassroom();
+  showScreen('screen-app');
+  showToast('Diagnostic complete! Your personalised plan is ready 🎉');
+}
+
+// ===== APP TABS =====
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`tab-${id}`).classList.add('active');
+  if(el) el.classList.add('active');
+}
+function switchDash(id, el) {
+  document.querySelectorAll('.dpanel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`dash-${id}`).classList.add('active');
+  el.classList.add('active');
+}
+
+// ===== HOME RENDERING =====
+function shortName(s){ return s.replace(' (CAPE)','').replace('Principles of Accounts','Accounts').replace('Caribbean History','History'); }
+function weekRangeLabel() {
+  const start=new Date(signupDate);
+  const end=new Date(signupDate); end.setDate(end.getDate()+6);
+  const fmt=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  return `${fmt(start)}–${fmt(end)}`;
+}
+function examDateBase() {
+  const examInput = document.getElementById('ob-examdate');
+  if(examInput && examInput.value) return new Date(examInput.value);
+  const d = new Date(signupDate); d.setDate(d.getDate()+56); return d;
+}
+function priorityQueue() {
+  let arr=[];
+  selectedSubjects.forEach(s=>{
+    const r=subjectResults[s];
+    if(!r) return;
+    r.topics.forEach(t=>arr.push({subject:s, topic:t.name, score:t.score, label:t.label}));
+  });
+  arr.sort((a,b)=>a.score-b.score);
+  return arr;
+}
+const colorCycle=['var(--teal)','var(--gold)','var(--amber)','var(--purple)','var(--red)','#5fb3d9'];
+function renderHome() {
+  // Progress bars
+  document.getElementById('progRow').innerHTML = selectedSubjects.slice(0,4).map(s=>{
+    const pct = subjectResults[s] ? subjectResults[s].overall : 0;
+    return `<div class="prog-box"><div class="prog-box-label">${shortName(s)} <strong>${pct}%</strong></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div></div>`;
+  }).join('');
+
+  // Exam countdown
+  const base = examDateBase();
+  document.getElementById('examCountdownList').innerHTML = selectedSubjects.map((s,i)=>{
+    const d=new Date(base); d.setDate(d.getDate()+i*3);
+    const days=Math.ceil((d-new Date())/(24*60*60*1000));
+    let badge,bg,col;
+    if(days<=3){badge=days<=0?'Now':'Soon';bg='rgba(224,92,92,0.1)';col='var(--red)';}
+    else if(days<=7){badge=days+' days';bg='rgba(245,200,66,0.1)';col='var(--gold)';}
+    else {badge=days+' days';bg='rgba(0,217,184,0.08)';col='var(--teal)';}
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:12px;font-weight:600;">${s}</span><span style="font-size:11px;color:var(--mist);">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:7px;background:${bg};color:${col};">${badge}</span></div>`;
+  }).join('');
+
+  // Weekly report
+  const card = document.getElementById('weeklyReportCard');
+  if(!diagnosticDone) {
+    card.innerHTML = `<div class="report-header"><div class="report-title">Week 1 Report</div><div class="report-date">${weekRangeLabel()}</div></div>
+      <div class="report-stats"><div class="stat-box"><div class="stat-num">0</div><div class="stat-label">Lessons Done</div></div><div class="stat-box"><div class="stat-num">0h</div><div class="stat-label">Study Time</div></div><div class="stat-box"><div class="stat-num">—</div><div class="stat-label">Avg. Gain</div></div></div>
+      <div class="report-message" style="margin-top:12px;">"Welcome aboard! This is your first week, so there's nothing to report yet. Take your diagnostic test from Home so we can build your personalised plan and start tracking your progress. 🌱"</div>`;
+  } else {
+    const rows = selectedSubjects.map((s,i)=>{
+      const r = subjectResults[s];
+      const c = colorCycle[i%colorCycle.length];
+      return `<div class="rs-row"><div class="rs-name" style="font-size:11px;">${shortName(s)}</div><div class="rs-bar"><div class="rs-fill" style="width:${r.overall}%;background:${c}"></div></div><div class="rs-pct" style="color:${c}">${r.overall}%</div></div>`;
+    }).join('');
+    card.innerHTML = `<div class="report-header"><div class="report-title">Week 1 Report</div><div class="report-date">${weekRangeLabel()}</div></div>
+      <div class="report-stats"><div class="stat-box"><div class="stat-num">${completedLessons.size}</div><div class="stat-label">Lessons Done</div></div><div class="stat-box"><div class="stat-num">${(completedLessons.size*0.5).toFixed(1)}h</div><div class="stat-label">Study Time</div></div><div class="stat-box"><div class="stat-num">—</div><div class="stat-label">vs last week</div></div></div>
+      <div class="report-subjects">${rows}</div>
+      <div class="report-message" style="margin-top:12px;">"Your diagnostic results are in! These scores are your starting point — your plan below is now built around your priority topics. Complete this week's lessons and next week we'll show your progress. 🌟"</div>`;
+  }
+  document.getElementById('pastReportsWrap').innerHTML = '';
+
+  renderTodaySchedule();
+  renderWeekSchedule();
+}
+let completedLessons = new Set();
+function renderTodaySchedule() {
+  const el = document.getElementById('todaySchedule');
+  const dayName = new Date().toLocaleDateString('en-US',{weekday:'long'});
+  if(!diagnosticDone) {
+    el.innerHTML = `<div class="tt-header"><h4>${dayName} · Week 1</h4><div class="tt-week-badge">Week 1</div></div><div style="padding:16px;font-size:12px;color:var(--mist);text-align:center;">Complete your diagnostic test to generate today's lesson plan.</div>`;
+    return;
+  }
+  const pq = priorityQueue();
+  const today = pq.slice(0,2);
+  el.innerHTML = `<div class="tt-header"><h4>${dayName} · This Week</h4><div class="tt-week-badge">Week 1</div></div>` +
+    today.map(item=>{
+      const key = item.subject+'|'+item.topic;
+      const done = completedLessons.has(key);
+      const safeSubj=item.subject.replace(/'/g,"\\'"), safeTopic=item.topic.replace(/'/g,"\\'");
+      return `<div class="tt-row" onclick="openTopicLesson('${safeSubj}','${safeTopic}')"><div class="tt-day today">${dayName.slice(0,3).toUpperCase()}</div><div class="tt-subjects">${shortName(item.subject)}: ${item.topic}</div><div class="tt-check ${done?'done':''}">${done?'✓':''}</div></div>`;
+    }).join('') + `<div style="padding:8px 14px;font-size:10px;color:var(--mist);">✅ Lessons are ticked automatically by Storm Bridge once you complete them.</div>`;
+}
+function renderWeekSchedule() {
+  const el = document.getElementById('weekSchedule');
+  if(!diagnosticDone) {
+    el.innerHTML = `<div class="tt-header"><h4>This Week</h4></div><div style="padding:16px;font-size:12px;color:var(--mist);text-align:center;">Your weekly schedule will appear here once your diagnostic is complete.</div>`;
+    return;
+  }
+  const pq = priorityQueue();
+  if(pq.length===0){ el.innerHTML=''; return; }
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat'];
+  el.innerHTML = `<div class="tt-header"><h4>Week 1 Plan</h4></div>` + days.map((d,i)=>{
+    const a=pq[(i*2)%pq.length], b=pq[(i*2+1)%pq.length];
+    const akey=a.subject+'|'+a.topic, bkey=b.subject+'|'+b.topic;
+    const aDone=completedLessons.has(akey), bDone=completedLessons.has(bkey);
+    const tick = (aDone&&bDone)?'done':'';
+    return `<div class="tt-row"><div class="tt-day">${d.toUpperCase()}</div><div class="tt-subjects">${shortName(a.subject)}: ${a.topic} <span>${shortName(b.subject)}: ${b.topic}</span></div><div class="tt-check ${tick}">${tick?'✓':''}</div></div>`;
+  }).join('');
+}
+
+// ===== LESSON MODAL (real syllabus content) =====
+let currentLessonKey = null;
+function openTopicLesson(subject, topicName) {
+  const topics = getTopics(subject);
+  const topic = topics.find(t=>t.name===topicName);
+  if(!topic) return;
+  const r = subjectResults[subject];
+  const tr = r ? r.topics.find(t=>t.name===topicName) : null;
+  const labelMap={priority:'🎯 Priority',attention:'⚠️ Needs Attention',normal:'✅ On Track'};
+  const label = tr ? labelMap[tr.label] : 'Take diagnostic to prioritise';
+  currentLessonKey = subject+'|'+topicName;
+  document.getElementById('mTitle').textContent = topicName;
+  document.getElementById('mSub').textContent = `${subject} · ${label}${tr?` · Diagnostic score: ${tr.score}%`:''}`;
+  document.getElementById('mContent').innerHTML =
+    '<strong>Notes</strong><br>' + topic.notes.map(n=>'• '+n).join('<br>') +
+    '<br><br><strong>Practice Questions</strong><br>' + topic.practice.map((p,i)=>(i+1)+'. '+p).join('<br>') +
+    `<br><br>▶ <a href="${topic.video.u}" target="_blank" style="color:var(--teal)">${topic.video.t}</a>`;
+  document.getElementById('mTip').textContent = tr && tr.label==='priority'
+    ? `This is flagged as a priority based on your diagnostic (${tr.score}%). Let's focus here first — mastering this will give you the biggest score boost.`
+    : tr && tr.label==='attention'
+    ? `You're partway there (${tr.score}%) — a focused review session should get this to full mastery.`
+    : tr
+    ? `You're doing well here (${tr.score}%) — a quick review keeps it sharp for exam day.`
+    : `Take your diagnostic test from Home so Nova can tell you exactly how urgent this topic is for you.`;
+  document.getElementById('mSchedule').textContent = 'Part of your Week 1 plan, prioritised by your diagnostic results.';
+  document.getElementById('lessonModal').classList.add('open');
+}
+function closeModals(e) {
+  if(e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('open');
+  }
+}
+const encouragements = [
+  {score:'+5%',msg:"You just pushed your score higher! Every lesson you complete is a step across the bridge. You're doing something extraordinary — keep building. 🌟"},
+  {score:'+7%',msg:"That's growth right there! The hurricane took some time, but it can't take your potential. You're proving that every single session. Keep going! 💪"},
+  {score:'+4%',msg:"Progress! Remember — recovery isn't a straight line. Every step you take means you're closer to walking into that exam room with confidence. You've got this! 🌈"},
+];
+function completeLesson() {
+  document.getElementById('lessonModal').classList.remove('open');
+  if(currentLessonKey) completedLessons.add(currentLessonKey);
+  renderHome();
+  renderClassroom();
+  const enc = encouragements[Math.floor(Math.random()*encouragements.length)];
+  document.getElementById('encScore').textContent = enc.score;
+  document.getElementById('encMsg').textContent = enc.msg;
+  document.getElementById('encOverlay').classList.add('open');
+}
+function closeEnc() {
+  document.getElementById('encOverlay').classList.remove('open');
+}
+
+// ===== CLASSROOM (LEARN) TAB =====
+let activeClassroomSubject = null;
+function renderClassroom() {
+  if(!activeClassroomSubject || !selectedSubjects.includes(activeClassroomSubject)) activeClassroomSubject = selectedSubjects[0];
+  document.getElementById('subjectTabsWrap').innerHTML = selectedSubjects.map(s=>{
+    const safe=s.replace(/'/g,"\\'");
+    return `<button class="dtab ${s===activeClassroomSubject?'active':''}" onclick="setClassroomSubject('${safe}')" style="white-space:nowrap;">${shortName(s)}</button>`;
+  }).join('');
+
+  const topics = getTopics(activeClassroomSubject);
+  const r = subjectResults[activeClassroomSubject];
+  let list = topics.map(t=>{
+    const tr = r ? r.topics.find(x=>x.name===t.name) : null;
+    return {topic:t, tr};
+  });
+  if(r) {
+    const order={priority:0,attention:1,normal:2};
+    list.sort((a,b)=>(order[a.tr.label]??3)-(order[b.tr.label]??3));
+  }
+  const wrap = document.getElementById('lessonsWrap');
+  let html='';
+  if(!r) html += `<div class="offline-note" style="margin-bottom:12px;">📋 Take your diagnostic test on Home to unlock priority labels and a personalised order for these lessons.</div>`;
+  html += list.map(item=>lessonCardHTML(activeClassroomSubject,item)).join('');
+  wrap.innerHTML = html;
+  renderVideos();
+}
+function lessonCardHTML(subject,item) {
+  const colors={priority:'var(--red)',attention:'var(--amber)',normal:'var(--teal)'};
+  const labels={priority:'🎯 Priority',attention:'⚠️ Needs attention',normal:'✅ On track'};
+  const stripe = item.tr ? colors[item.tr.label] : 'var(--teal)';
+  const tagHtml = item.tr ? `<span class="tag">${labels[item.tr.label]}</span>` : '';
+  const key = subject+'|'+item.topic.name;
+  const done = completedLessons.has(key);
+  const safeSubj=subject.replace(/'/g,"\\'"), safeTopic=item.topic.name.replace(/'/g,"\\'");
+  return `<div class="lesson-card" onclick="openTopicLesson('${safeSubj}','${safeTopic}')">
+    <div class="lc-stripe" style="background:${stripe}"></div>
+    <div class="lc-top"><div class="lc-subj" style="color:${stripe}">${shortName(subject)}</div><div class="lc-prog-pill">${item.tr?item.tr.score+'% mastery':(done?'Completed':'Not started')}</div></div>
+    <div class="lc-title">${item.topic.name}</div>
+    <div class="lc-desc">${item.topic.notes[0]}</div>
+    <div class="lc-tags">${tagHtml}<span class="tag video">▶ Video</span>${done?'<span class="tag">✓ Completed</span>':''}</div>
+  </div>`;
+}
+function setClassroomSubject(s) { activeClassroomSubject = s; renderClassroom(); }
+function renderVideos() {
+  const topics = getTopics(activeClassroomSubject);
+  document.getElementById('videosWrap').innerHTML = topics.map(t=>`<div class="video-card" onclick="window.open('${t.video.u}','_blank')">
+    <div class="video-thumb">🎬<div class="video-play">▶</div></div>
+    <div class="video-info"><div class="video-title">${t.video.t}</div><div class="video-meta">${shortName(activeClassroomSubject)} · ${t.name}</div><div class="video-offline-badge">▶ Open video</div></div>
+  </div>`).join('');
+}
+
+// ===== PAST PAPERS (2013–2024, generated quizzes) =====
+let quizQs=[], quizAnswers=[], quizSubject='', quizYear=0;
+function renderPapers() {
+  let html='';
+  selectedSubjects.forEach(subject=>{
+    const safe=subject.replace(/'/g,"\\'");
+    html += `<div class="sec-title">📄 ${subject} — Past Papers</div>`;
+    for(let y=2024;y>=2013;y--){
+      html += `<div class="paper-card"><div class="paper-top"><div class="paper-year">${subject} — ${y}</div><div class="paper-actions"><button class="paper-btn quiz" onclick="startPaperQuiz('${safe}',${y})">📝 Quiz</button><button class="paper-btn print" onclick="showToast('Opening print view for ${subject} ${y}…')">🖨 Print</button></div></div><div class="paper-sub">CXC/CAPE-style practice quiz generated from the ${subject} syllabus question bank</div></div>`;
+    }
+  });
+  document.getElementById('papersWrap').innerHTML = html;
+  document.getElementById('studyPacksWrap').innerHTML = selectedSubjects.map(s=>
+    `<div class="res-card" onclick="showToast('Generating ${s} study pack for your priority topics…')"><div class="res-icon" style="background:rgba(240,148,77,0.1)">🖨</div><div class="res-info"><div class="res-title">${s} Priority Study Pack</div><div class="res-sub">Notes + practice for your weakest topics</div></div><div class="res-badge">PDF</div></div>`
+  ).join('');
+}
+function startPaperQuiz(subject, year) {
+  const bank = getDiagBank(subject);
+  const n = Math.min(10, bank.length);
+  const offset = (2024-year) % bank.length;
+  quizQs=[]; for(let i=0;i<n;i++) quizQs.push(bank[(offset+i)%bank.length]);
+  quizAnswers = new Array(quizQs.length).fill(null);
+  quizSubject = subject; quizYear = year;
+  renderQuizSubject();
+  showScreen('screen-diagnostic');
+  clearInterval(timerInterval);
+  const t=document.getElementById('diagTimer'); if(t) t.textContent='--:--';
+}
+function renderQuizSubject() {
+  document.getElementById('diagSubjLabel').textContent = `${quizSubject} ${quizYear} — Practice Quiz (${quizQs.length} Qs)`;
+  document.getElementById('diagBody').innerHTML = `<div class="section-badge">📝 ${quizSubject} ${quizYear} Practice Quiz</div>` + quizQs.map((q,i)=>
+    `<div class="q-card"><div class="q-num">Question ${i+1} of ${quizQs.length} · ${q.topic}</div><div class="q-text">${q.q}</div><div class="q-options">` +
+    q.opts.map((o,j)=>`<div class="q-opt" onclick="selectQuizOpt(this,${i},${j})"><div class="opt-letter">${String.fromCharCode(65+j)}</div>${o}</div>`).join('') +
+    `</div></div>`).join('');
+  const btn=document.getElementById('diagActionBtn');
+  btn.textContent='Submit Quiz →';
+  btn.onclick=finishQuiz;
+  window.scrollTo(0,0);
+}
+function selectQuizOpt(el,qi,oi) {
+  el.closest('.q-options').querySelectorAll('.q-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  quizAnswers[qi]=oi;
+}
+function finishQuiz() {
+  let correct=0;
+  quizQs.forEach((q,i)=>{ if(quizAnswers[i]===q.correct) correct++; });
+  const pct = Math.round(correct/quizQs.length*100);
+  showScreen('screen-app');
+  switchTab('resources', document.querySelectorAll('.nav-item')[3]);
+  showToast(`${quizSubject} ${quizYear} quiz: ${correct}/${quizQs.length} (${pct}%) ✅`);
+}
+
+// ===== AI TUTOR (Nova) — rule-based Socratic mentor =====
+// Nova never gives the answer immediately. She asks guiding questions first,
+// then confirms once the student reasons their way to the answer.
+const novaTopics = [
+  {
+    keys: ['quadratic','factor','parabola'],
+    steps: [
+      "Let's work through this together rather than me just handing you the rule. A quadratic equation looks like ax² + bx + c = 0 — can you tell me what the values of a, b and c are if our equation is x² + 5x + 6 = 0?",
+      "Good thinking. Now, factoring means finding two numbers that multiply to give c (6) and add to give b (5). What two numbers do that?",
+      "Exactly — 2 and 3! So the factorised form is (x + 2)(x + 3) = 0. Now, if a product of two things equals zero, what must be true about at least one of them?"
+    ],
+    confirm: "That's it — one of the brackets must equal zero, giving x = −2 or x = −3. You just factorised a quadratic on your own. Try applying the same two-numbers trick on your next practice question — you've got the method now! 🌟"
+  },
+  {
+    keys: ['account','trial balance','ledger','balance sheet'],
+    steps: [
+      "Before we jump to the answer, let's think about it step by step. A trial balance has two sides — what do you think goes on the debit side, and what goes on the credit side?",
+      "Good start. Now think about an asset, like cash — when cash increases, which side does it go on, debit or credit?",
+      "Right — assets and expenses sit on the debit side. So if you're listing all your ledger balances, which side would liabilities, capital and revenue go on?"
+    ],
+    confirm: "Exactly — the credit side. Once both sides are listed, they should balance to the same total — that's the whole point of a trial balance. You've got the logic down. Want to try listing a few accounts and see if you can balance them?"
+  },
+  {
+    keys: ['biology','meiosis','mitosis','genetics','cell'],
+    steps: [
+      "Let's reason through this rather than me just telling you. Mitosis and meiosis both involve cell division — but one produces identical cells and one produces cells with half the chromosomes. Which one do you think is used for growth and repair?",
+      "Good — mitosis, for growth and repair. Now, why do you think the body needs a different process (meiosis) specifically for making sex cells?",
+      "You're close — it's because sex cells need only half the chromosome number, so that when they combine during fertilisation, the offspring ends up with the full number again. Does that make sense with what you already know about chromosome numbers?"
+    ],
+    confirm: "Exactly right! Mitosis = growth/repair with identical cells, meiosis = sex cells with half the chromosomes so fertilisation restores the full set. That's a key CXC concept locked in. 🌱"
+  },
+  {
+    keys: ['summary','paraphrase','comprehension'],
+    steps: [
+      "Rather than me listing the steps, let's think about purpose first — when you summarise a passage, what do you think the goal is: to copy the important sentences, or to do something else?",
+      "Good instinct. So if copying isn't allowed, what do you think you need to do with the key ideas instead — in your own words?",
+      "Right — paraphrase them. Now, CXC also gives a word limit. Why do you think they do that, instead of letting you write as much as you want?"
+    ],
+    confirm: "Exactly — the word limit forces you to be selective and only include the most important ideas, in your own words. That's the heart of the 8-step method. Try it on a short paragraph and see how it feels!"
+  },
+  {
+    keys: ['stress','behind','overwhelm','anxious','tired'],
+    steps: [
+      "I hear you, and that's a completely understandable feeling — especially with everything that's happened. Before anything else: can you tell me one specific subject or topic that's worrying you the most right now?",
+      "Thanks for sharing that. On a scale of a little bit worried to very worried, how would you describe how you're feeling about it?",
+      "Okay. Sometimes breaking a big worry into one small, doable task helps a lot. What's one small thing — even 15 minutes — you could do today on that topic?"
+    ],
+    confirm: "That's a great first step. You don't have to fix everything today — just that one small thing. I'll be right here whenever you're ready to work through it together. 💙"
+  }
+];
+
+let chatHistory = [{role:'assistant',content:"Hey 👋 I'm Nova. I've reviewed your diagnostic results and your current scores — and I'm here to help you close every gap before your exams.\n\nRather than just giving you answers, I'll usually ask you a few guiding questions first — that way the understanding sticks. What would you like to work on?"}];
+let novaState = null; // {topicIndex, step}
+
+function findTopic(text) {
+  const lower = text.toLowerCase();
+  return novaTopics.findIndex(t => t.keys.some(k=>lower.includes(k)));
+}
+
+async function sendMsg() {
+  const inp = document.getElementById('chatInp');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  addChatMsg(text,'user');
+  chatHistory.push({role:'user',content:text});
+
+  let reply;
+  if(novaState) {
+    // Student is responding to a guiding question
+    const topic = novaTopics[novaState.topicIndex];
+    novaState.step++;
+    if(novaState.step < topic.steps.length) {
+      reply = topic.steps[novaState.step];
+    } else {
+      reply = topic.confirm;
+      novaState = null;
+    }
+  } else {
+    const idx = findTopic(text);
+    if(idx >= 0) {
+      novaState = {topicIndex: idx, step: 0};
+      reply = novaTopics[idx].steps[0];
+    } else {
+      reply = "That's a good question — rather than me jumping straight to an answer, let's reason it out together. Can you tell me what you already know about this topic, or what part of it feels confusing?";
+    }
+  }
+
+  // Small delay so it feels conversational
+  const t = addChatMsg('Nova is thinking…','ai typing');
+  setTimeout(()=>{
+    t.remove();
+    addChatMsg(reply,'ai');
+    chatHistory.push({role:'assistant',content:reply});
+  }, 500);
+}
+function addChatMsg(text,type) {
+  const box = document.getElementById('chatMsgs');
+  const d = document.createElement('div');
+  d.className = 'msg '+type;
+  d.textContent = text;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+  return d;
+}
+function quickQ(q) {
+  document.getElementById('chatInp').value = q;
+  switchTab('tutor', document.querySelector('.nav-item:nth-child(3)'));
+  sendMsg();
+}
+function handleKey(e) {
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none',2500);
+}
+
+function openNotifCenter() {
+  const el = document.getElementById('notifCenter');
+  el.style.display = 'flex';
+}
+function closeNotifCenter(e) {
+  if(e.target === document.getElementById('notifCenter')) {
+    document.getElementById('notifCenter').style.display = 'none';
+  }
+}
+
+// Animate progress bars
+window.addEventListener('load',()=>{
+  document.querySelectorAll('.prog-fill,.rs-fill').forEach(el=>{
+    const w=el.style.width; el.style.width='0';
+    setTimeout(()=>el.style.width=w,400);
+  });
+});
+</script>
+</body>
+</html>
