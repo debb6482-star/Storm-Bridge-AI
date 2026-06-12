@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storm Bridge AI — Hurricane Recovery Education</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05111f;
+  --deep: #03090f;
+  --card: #0b1f35;
+  --card2: #0f2840;
+  --teal: #00d9b8;
+  --teal2: #00a88e;
+  --gold: #f5c842;
+  --amber: #f0944d;
+  --red: #e05c5c;
+  --purple: #8b7cf8;
+  --mist: #7fa8c4;
+  --white: #e8f4ff;
+  --border: rgba(0,217,184,0.13);
+  --border2: rgba(255,255,255,0.07);
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 40% at 15% 5%,rgba(0,217,184,0.05) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 90% 90%,rgba(11,31,53,0.8) 0%,transparent 70%);pointer-events:none;z-index:0;}
+
+/* SCREENS */
+.screen{display:none;position:relative;z-index:1;min-height:100vh;}
+.screen.active{display:block;}
+
+/* ===== ONBOARDING ===== */
+#screen-onboard{background:linear-gradient(160deg,#05111f 0%,#071828 60%,#051420 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;}
+.ob-logo{text-align:center;margin-bottom:32px;}
+.ob-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--teal),var(--teal2));border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 14px;box-shadow:0 0 40px rgba(0,217,184,0.3);}
+.ob-brand{font-family:'Fraunces',serif;font-size:28px;font-weight:900;letter-spacing:-.5px;}
+.ob-brand span{color:var(--teal);}
+.ob-tagline{font-size:13px;color:var(--mist);margin-top:4px;}
+.ob-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:22px;width:100%;max-width:400px;}
+.ob-step{display:none;animation:fadeUp .3s ease;}
+.ob-step.active{display:block;}
+.ob-title{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+.ob-sub{font-size:13px;color:var(--mist);margin-bottom:20px;line-height:1.5;}
+.form-group{margin-bottom:14px;}
+label{font-size:12px;color:var(--mist);font-weight:600;text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px;}
+input,select,textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:10px;padding:11px 14px;color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+input:focus,select:focus,textarea:focus{border-color:rgba(0,217,184,0.4);}
+select option{background:#0b1f35;color:var(--white);}
+.chip-group{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px;}
+.chip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:rgba(255,255,255,0.04);color:var(--mist);transition:all .2s;user-select:none;}
+.chip.selected{background:rgba(0,217,184,0.12);border-color:rgba(0,217,184,0.4);color:var(--teal);}
+.btn{width:100%;padding:13px;border-radius:12px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:10px;}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;box-shadow:0 0 20px rgba(0,217,184,0.25);}
+.btn-primary:active{opacity:.85;}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--white);border:1px solid var(--border2);}
+.ob-progress{display:flex;gap:5px;margin-bottom:18px;}
+.ob-dot{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.1);transition:background .3s;}
+.ob-dot.done{background:var(--teal);}
+
+/* ===== DIAGNOSTIC ===== */
+#screen-diagnostic{padding:0;}
+.diag-header{background:linear-gradient(90deg,rgba(0,217,184,0.1),transparent);border-bottom:1px solid var(--border);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);}
+.diag-info h3{font-family:'Fraunces',serif;font-size:16px;font-weight:700;}
+.diag-info p{font-size:11px;color:var(--mist);}
+.diag-timer{background:rgba(0,217,184,0.1);border:1px solid rgba(0,217,184,0.2);border-radius:10px;padding:5px 12px;font-size:13px;font-weight:700;color:var(--teal);}
+.diag-body{padding:18px;max-width:430px;margin:0 auto;padding-bottom:100px;}
+.section-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.2);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
+.q-num{font-size:10px;color:var(--mist);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;font-weight:600;}
+.q-text{font-size:14px;line-height:1.5;margin-bottom:12px;font-weight:500;}
+.q-options{display:flex;flex-direction:column;gap:7px;}
+.q-opt{padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:rgba(255,255,255,0.03);font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;}
+.q-opt:active,.q-opt.selected{background:rgba(0,217,184,0.08);border-color:rgba(0,217,184,0.35);color:var(--teal);}
+.q-opt .opt-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.q-opt.selected .opt-letter{background:var(--teal);border-color:var(--teal);color:#000;}
+.q-opt.correct{background:rgba(0,217,184,0.1);border-color:var(--teal);}
+.q-opt.wrong{background:rgba(224,92,92,0.1);border-color:var(--red);}
+textarea.short-ans{min-height:80px;resize:vertical;font-size:13px;}
+.diag-diagram{background:rgba(255,255,255,0.03);border:1px dashed var(--border2);border-radius:12px;padding:14px;text-align:center;margin-bottom:10px;}
+.diag-diagram img{max-width:100%;border-radius:8px;margin-bottom:8px;}
+.diagram-svg{width:100%;max-width:260px;height:180px;margin:0 auto;display:block;}
+.label-input{background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--white);width:90px;font-family:'Plus Jakarta Sans',sans-serif;text-align:center;}
+.diag-fixed-bottom{position:fixed;bottom:0;left:0;right:0;padding:12px 18px;background:rgba(5,17,31,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);z-index:20;max-width:430px;margin:0 auto;}
+
+/* ===== MAIN APP ===== */
+#screen-app{padding-bottom:70px;}
+.app-header{padding:18px 18px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(5,17,31,0.92);backdrop-filter:blur(14px);z-index:10;border-bottom:1px solid var(--border);}
+.app-brand{font-family:'Fraunces',serif;font-size:17px;font-weight:900;}
+.app-brand span{color:var(--teal);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.notif-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
+.avatar-sm{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;box-shadow:0 0 12px rgba(0,217,184,0.2);}
+
+.app-wrap{padding:14px 16px;max-width:430px;margin:0 auto;}
+
+/* TABS */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(5,17,31,0.97);border-top:1px solid var(--border);display:flex;padding:8px 0 14px;z-index:20;max-width:430px;margin:0 auto;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .2s;}
+.nav-icon{font-size:20px;line-height:1;}
+.nav-label{font-size:9px;font-weight:600;color:var(--mist);text-transform:uppercase;letter-spacing:.4px;transition:color .2s;}
+.nav-item.active .nav-label{color:var(--teal);}
+.nav-item.active .nav-icon{filter:drop-shadow(0 0 6px rgba(0,217,184,0.5));}
+
+.tab-panel{display:none;animation:fadeUp .25s ease;}
+.tab-panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* HERO BANNER */
+.hero-banner{background:linear-gradient(135deg,var(--card2),#112240);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:16px;position:relative;overflow:hidden;}
+.hero-banner::after{content:'🌉';position:absolute;right:-10px;top:-10px;font-size:80px;opacity:.07;}
+.hero-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.hero-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 16px rgba(0,217,184,0.25);}
+.hero-name{font-family:'Fraunces',serif;font-size:18px;font-weight:700;}
+.hero-meta{font-size:12px;color:var(--mist);}
+.recovery-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.25);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--gold);margin-top:4px;}
+.prog-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.prog-box{background:rgba(0,0,0,0.2);border-radius:10px;padding:10px;}
+.prog-box-label{font-size:10px;color:var(--mist);display:flex;justify-content:space-between;margin-bottom:5px;}
+.prog-box-label strong{color:var(--teal);}
+.prog-bar{height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--teal),var(--teal2));transition:width 1.2s ease;}
+
+/* SECTION TITLE */
+.sec-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 10px;display:flex;align-items:center;gap:8px;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* LESSON CARDS */
+.lesson-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.lesson-card:active{border-color:rgba(0,217,184,0.4);transform:translateY(-1px);}
+.lc-stripe{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.lc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+.lc-subj{font-size:10px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;}
+.lc-prog-pill{font-size:10px;padding:2px 8px;border-radius:8px;background:rgba(0,217,184,0.08);color:var(--teal);}
+.lc-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;margin-bottom:3px;}
+.lc-desc{font-size:12px;color:var(--mist);line-height:1.4;margin-bottom:8px;}
+.lc-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.tag{font-size:10px;padding:3px 8px;border-radius:8px;background:rgba(255,255,255,0.05);color:var(--mist);}
+.tag.offline{background:rgba(0,217,184,0.08);color:var(--teal);}
+.tag.print{background:rgba(240,148,77,0.1);color:var(--amber);}
+.tag.video{background:rgba(224,92,92,0.1);color:var(--red);}
+
+/* TIMETABLE */
+.timetable{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.tt-header{background:linear-gradient(90deg,rgba(0,217,184,0.1),transparent);padding:12px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.tt-header h4{font-family:'Fraunces',serif;font-size:14px;font-weight:700;}
+.tt-week-badge{font-size:11px;color:var(--gold);background:rgba(245,200,66,0.1);padding:2px 8px;border-radius:8px;}
+.tt-row{display:grid;grid-template-columns:70px 1fr auto;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;cursor:pointer;transition:background .2s;}
+.tt-row:last-child{border-bottom:none;}
+.tt-row:active{background:rgba(0,217,184,0.04);}
+.tt-day{font-size:11px;font-weight:700;color:var(--mist);}
+.tt-day.today{color:var(--teal);}
+.tt-subjects{font-size:12px;}
+.tt-subjects span{display:block;font-size:10px;color:var(--mist);margin-top:2px;}
+.tt-check{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s;flex-shrink:0;}
+.tt-check.done{background:var(--teal);border-color:var(--teal);color:#000;}
+
+/* WEEKLY REPORT */
+.report-card{background:linear-gradient(135deg,#0d1e36,#0f2840);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;}
+.report-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.report-title{font-family:'Fraunces',serif;font-size:15px;font-weight:700;}
+.report-date{font-size:11px;color:var(--mist);}
+.report-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.stat-box{background:rgba(0,0,0,0.2);border-radius:10px;padding:10px;text-align:center;}
+.stat-num{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--teal);}
+.stat-label{font-size:10px;color:var(--mist);margin-top:2px;}
+.report-message{background:rgba(245,200,66,0.06);border:1px solid rgba(245,200,66,0.15);border-radius:10px;padding:10px 12px;font-size:12px;color:#f5e8a0;line-height:1.5;font-style:italic;}
+.report-subjects{margin-top:12px;}
+.rs-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.rs-name{font-size:12px;width:80px;flex-shrink:0;}
+.rs-bar{flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;}
+.rs-fill{height:100%;border-radius:3px;transition:width 1.2s ease;}
+.rs-pct{font-size:11px;color:var(--teal);width:30px;text-align:right;flex-shrink:0;}
+
+/* AI TUTOR */
+.tutor-box{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px;}
+.tutor-header{background:linear-gradient(90deg,rgba(0,217,184,0.1),transparent);padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.tutor-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 10px rgba(0,217,184,0.3);}
+.tutor-name{font-family:'Fraunces',serif;font-size:14px;font-weight:700;}
+.tutor-status{font-size:10px;color:var(--teal);}
+.chat-msgs{padding:14px;min-height:180px;max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;}
+.chat-msgs::-webkit-scrollbar{width:3px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--card2);border-radius:2px;}
+.msg{max-width:86%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.45;}
+.msg.ai{background:var(--card2);border:1px solid var(--border);color:var(--white);align-self:flex-start;border-radius:4px 12px 12px 12px;}
+.msg.user{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;font-weight:500;align-self:flex-end;border-radius:12px 4px 12px 12px;}
+.msg.typing{color:var(--mist);font-style:italic;}
+.quick-qs{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 10px;}
+.qq{font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid var(--border2);background:rgba(255,255,255,0.04);color:var(--mist);font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;}
+.qq:active{background:rgba(0,217,184,0.08);color:var(--teal);}
+.chat-input-row{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);}
+.chat-inp{flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;color:var(--white);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;resize:none;}
+.chat-inp:focus{border-color:rgba(0,217,184,0.4);}
+.send-btn{width:38px;height:38px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--teal),var(--teal2));cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all .2s;}
+.send-btn:active{transform:scale(.93);}
+
+/* RESOURCES */
+.res-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
+.res-card:active{border-color:rgba(0,217,184,0.35);}
+.res-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.res-info{flex:1;}
+.res-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+.res-sub{font-size:11px;color:var(--mist);}
+.res-badge{font-size:10px;padding:2px 8px;border-radius:8px;background:rgba(0,217,184,0.08);color:var(--teal);flex-shrink:0;font-weight:600;}
+.paper-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;}
+.paper-card:active{border-color:rgba(0,217,184,0.35);}
+.paper-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.paper-year{font-family:'Fraunces',serif;font-size:15px;font-weight:700;}
+.paper-actions{display:flex;gap:6px;}
+.paper-btn{font-size:11px;padding:4px 10px;border-radius:8px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;transition:all .2s;}
+.paper-btn.quiz{background:rgba(0,217,184,0.12);color:var(--teal);}
+.paper-btn.print{background:rgba(240,148,77,0.12);color:var(--amber);}
+.paper-sub{font-size:11px;color:var(--mist);}
+.video-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:0;}
+.video-thumb{width:80px;height:56px;background:linear-gradient(135deg,#1a0a0a,#2a0a0a);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;position:relative;}
+.video-play{position:absolute;width:24px;height:24px;background:rgba(255,0,0,0.8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.video-info{padding:10px 12px;flex:1;}
+.video-title{font-size:12px;font-weight:600;margin-bottom:3px;line-height:1.3;}
+.video-meta{font-size:10px;color:var(--mist);}
+.video-offline-badge{font-size:10px;color:var(--teal);background:rgba(0,217,184,0.08);padding:2px 7px;border-radius:6px;margin-top:4px;display:inline-block;}
+
+/* SCHOOL DASHBOARD */
+.dash-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
+.dash-tabs::-webkit-scrollbar{display:none;}
+.dtab{flex-shrink:0;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:rgba(255,255,255,0.05);color:var(--mist);transition:all .2s;}
+.dtab.active{background:var(--teal);color:#000;}
+.dpanel{display:none;animation:fadeUp .25s ease;}
+.dpanel.active{display:block;}
+.school-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.sch-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;}
+.sch-stat-num{font-family:'Fraunces',serif;font-size:26px;font-weight:900;color:var(--teal);}
+.sch-stat-label{font-size:10px;color:var(--mist);margin-top:2px;}
+.student-row{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
+.student-row:active{border-color:rgba(0,217,184,0.35);}
+.stu-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#6b5ce7);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.stu-info{flex:1;}
+.stu-name{font-size:13px;font-weight:600;}
+.stu-meta{font-size:10px;color:var(--mist);}
+.stu-score{text-align:right;}
+.stu-pct{font-family:'Fraunces',serif;font-size:18px;font-weight:900;color:var(--teal);}
+.stu-trend{font-size:10px;color:#4ade80;}
+.alert-item{background:rgba(224,92,92,0.07);border:1px solid rgba(224,92,92,0.15);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.alert-text{font-size:12px;line-height:1.5;}
+.alert-text strong{color:var(--white);}
+.contact-btn{margin-top:6px;font-size:11px;padding:4px 10px;border-radius:8px;background:rgba(224,92,92,0.12);color:var(--red);border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-width:430px;animation:slideUp .3s ease;max-height:85vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);margin:0 auto 16px;}
+.modal-title{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+.modal-sub{font-size:13px;color:var(--mist);margin-bottom:16px;line-height:1.5;}
+.modal-section-title{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--teal);font-weight:700;margin-bottom:6px;}
+.modal-content{font-size:13px;line-height:1.7;margin-bottom:14px;white-space:pre-line;}
+.encourage-box{background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.2);border-radius:12px;padding:12px;font-size:13px;color:#f5e8a0;line-height:1.6;font-style:italic;margin-bottom:14px;}
+.modal-btn{width:100%;padding:13px;border-radius:12px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;}
+
+/* ENCOURAGEMENT OVERLAY */
+.encourage-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.encourage-overlay.open{display:flex;}
+.encourage-card{background:linear-gradient(135deg,#0f2840,#0a1f38);border:1px solid rgba(0,217,184,0.2);border-radius:24px;padding:28px 24px;text-align:center;max-width:320px;margin:20px;animation:popIn .4s ease;}
+@keyframes popIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+.enc-emoji{font-size:52px;margin-bottom:14px;}
+.enc-title{font-family:'Fraunces',serif;font-size:22px;font-weight:900;margin-bottom:8px;}
+.enc-msg{font-size:14px;color:var(--mist);line-height:1.6;margin-bottom:20px;}
+.enc-score{font-family:'Fraunces',serif;font-size:40px;font-weight:900;color:var(--teal);margin-bottom:6px;}
+.enc-sub{font-size:12px;color:var(--mist);margin-bottom:20px;}
+.enc-btn{width:100%;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+
+/* TOAST */
+#toast{display:none;position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:rgba(0,217,184,0.12);border:1px solid rgba(0,217,184,0.25);color:var(--teal);padding:9px 18px;border-radius:20px;font-size:13px;z-index:300;backdrop-filter:blur(8px);white-space:nowrap;}
+
+/* OFFLINE NOTICE */
+.offline-note{background:rgba(0,217,184,0.06);border:1px solid rgba(0,217,184,0.13);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--mist);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<!-- ===== ONBOARDING ===== -->
+<div id="screen-onboard" class="screen active">
+  <div class="ob-logo">
+    <div class="ob-icon">🌉</div>
+    <div class="ob-brand">Storm <span>Bridge</span> AI</div>
+    <div class="ob-tagline">Bridging the gap — CXC & CAPE Hurricane Recovery</div>
+  </div>
+
+  <div class="ob-card">
+    <div class="ob-progress" id="obProgress">
+      <div class="ob-dot done" id="dot1"></div>
+      <div class="ob-dot" id="dot2"></div>
+      <div class="ob-dot" id="dot3"></div>
+      <div class="ob-dot" id="dot4"></div>
+      <div class="ob-dot" id="dot5"></div>
+    </div>
+
+    <!-- Step 0: Role Selection -->
+    <div class="ob-step active" id="ob-step0">
+      <div class="ob-title">Welcome to Storm Bridge AI 👋</div>
+      <div class="ob-sub">Who are you? Select your role to get started.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div id="role-student" onclick="selectRole('student')" style="background:rgba(0,217,184,0.08);border:2px solid rgba(0,217,184,0.4);border-radius:16px;padding:20px 12px;text-align:center;cursor:pointer;transition:all .2s;">
+          <div style="font-size:32px;margin-bottom:8px;">👩🏾‍🎓</div>
+          <div style="font-family:'Fraunces',serif;font-size:14px;font-weight:700;">Student</div>
+          <div style="font-size:11px;color:var(--mist);margin-top:3px;line-height:1.4;">CXC or CAPE student in recovery</div>
+        </div>
+        <div id="role-teacher" onclick="selectRole('teacher')" style="background:rgba(255,255,255,0.04);border:2px solid var(--border2);border-radius:16px;padding:20px 12px;text-align:center;cursor:pointer;transition:all .2s;">
+          <div style="font-size:32px;margin-bottom:8px;">👩🏽‍🏫</div>
+          <div style="font-family:'Fraunces',serif;font-size:14px;font-weight:700;">Teacher</div>
+          <div style="font-size:11px;color:var(--mist);margin-top:3px;line-height:1.4;">Educator or school admin</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="obNext(1)">Continue →</button>
+    </div>
+
+    <!-- Step 1: Personal Info -->
+    <div class="ob-step" id="ob-step1">
+      <div class="ob-title">Your Details 📋</div>
+      <div class="ob-sub">Tell us about yourself so we can personalise your recovery plan.</div>
+      <div class="form-group"><label>Full Name</label><input type="text" id="ob-name" placeholder="e.g. Aaliyah Brown" value="Aaliyah Brown"></div>
+      <div class="form-group"><label>Age</label><input type="number" id="ob-age" placeholder="e.g. 16" value="16" min="10" max="25"></div>
+      <div class="form-group"><label>School</label><input type="text" id="ob-school" placeholder="e.g. St. Thomas High School" value="St. Thomas High School"></div>
+      <div class="form-group"><label>Parish</label>
+        <select id="ob-parish">
+          <option>St. Thomas</option><option>Kingston</option><option>St. Andrew</option><option>St. Catherine</option><option>Clarendon</option><option>Manchester</option><option>St. Elizabeth</option><option>Westmoreland</option><option>Hanover</option><option>St. James</option><option>Trelawny</option><option>St. Ann</option><option>St. Mary</option><option>Portland</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="obNext(2)">Continue →</button>
+    </div>
+
+    <!-- Step 2: Level & Subjects -->
+    <div class="ob-step" id="ob-step2">
+      <div class="ob-title">Your Level & Subjects 📚</div>
+      <div class="ob-sub">Select your exam level and the subjects you are studying.</div>
+      <div class="form-group">
+        <label>Exam Level</label>
+        <div class="chip-group">
+          <div class="chip selected" onclick="selectChip(this,'level')">CXC / CSEC</div>
+          <div class="chip" onclick="selectChip(this,'level')">CAPE Unit 1</div>
+          <div class="chip" onclick="selectChip(this,'level')">CAPE Unit 2</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Subjects (select all that apply)</label>
+        <div class="chip-group" id="subject-chips">
+          <div class="chip selected" onclick="toggleChip(this)">Mathematics</div>
+          <div class="chip selected" onclick="toggleChip(this)">English A</div>
+          <div class="chip selected" onclick="toggleChip(this)">Biology</div>
+          <div class="chip" onclick="toggleChip(this)">Chemistry</div>
+          <div class="chip" onclick="toggleChip(this)">Physics</div>
+          <div class="chip selected" onclick="toggleChip(this)">Caribbean History</div>
+          <div class="chip selected" onclick="toggleChip(this)">Principles of Accounts</div>
+          <div class="chip" onclick="toggleChip(this)">Geography</div>
+          <div class="chip" onclick="toggleChip(this)">Social Studies</div>
+          <div class="chip" onclick="toggleChip(this)">Spanish</div>
+          <div class="chip" onclick="toggleChip(this)">Information Technology</div>
+          <div class="chip" onclick="toggleChip(this)">Agricultural Science</div>
+          <div class="chip" onclick="toggleChip(this)">Technical Drawing</div>
+          <div class="chip" onclick="toggleChip(this)">Office Administration</div>
+          <div class="chip" onclick="toggleChip(this)">Visual Arts</div>
+          <div class="chip" onclick="toggleChip(this)">Music</div>
+          <div class="chip" onclick="toggleChip(this)">Physical Education</div>
+          <div class="chip" onclick="toggleChip(this)">Economics</div>
+          <div class="chip" onclick="toggleChip(this)">Sociology</div>
+          <div class="chip" onclick="toggleChip(this)">Communication Studies</div>
+          <div class="chip" onclick="toggleChip(this)">Literatures in English</div>
+          <div class="chip" onclick="toggleChip(this)">Pure Mathematics</div>
+          <div class="chip" onclick="toggleChip(this)">Applied Mathematics</div>
+          <div class="chip" onclick="toggleChip(this)">Management of Business</div>
+          <div class="chip" onclick="toggleChip(this)">French</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="obNext(3)">Continue →</button>
+      <button class="btn btn-ghost" onclick="obNext(1)" style="margin-top:6px;">← Back</button>
+    </div>
+
+    <!-- Step 3: Situation -->
+    <div class="ob-step" id="ob-step3">
+      <div class="ob-title">Your Situation 🌀</div>
+      <div class="ob-sub">Help us understand how the hurricane has affected your learning so we can support you better.</div>
+      <div class="form-group">
+        <label>What did the hurricane affect? (select all)</label>
+        <div class="chip-group">
+          <div class="chip selected" onclick="toggleChip(this)">School closed</div>
+          <div class="chip selected" onclick="toggleChip(this)">No electricity</div>
+          <div class="chip selected" onclick="toggleChip(this)">No internet</div>
+          <div class="chip" onclick="toggleChip(this)">Lost textbooks/notes</div>
+          <div class="chip" onclick="toggleChip(this)">Device damaged</div>
+          <div class="chip" onclick="toggleChip(this)">Displaced from home</div>
+          <div class="chip" onclick="toggleChip(this)">Lost teacher contact</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>How many weeks of school have you missed?</label>
+        <select id="ob-weeks">
+          <option>Less than 1 week</option>
+          <option selected>1–2 weeks</option>
+          <option>3–4 weeks</option>
+          <option>More than a month</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Exam date (approximate)</label>
+        <select id="ob-exam">
+          <option>May–June 2025</option>
+          <option selected>May–June 2026</option>
+          <option>January 2026</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="obNext(4)">Continue →</button>
+      <button class="btn btn-ghost" onclick="obNext(2)" style="margin-top:6px;">← Back</button>
+    </div>
+
+    <!-- Step 4: Exam Timetable -->
+    <div class="ob-step" id="ob-step4">
+      <div class="ob-title">Exam Timetable 📅</div>
+      <div class="ob-sub">Upload your CXC/CAPE timetable so we can build your exam countdown calendar.</div>
+      <div onclick="document.getElementById('ttUpload').click()" style="border:1px dashed rgba(0,217,184,0.25);border-radius:12px;padding:20px;text-align:center;cursor:pointer;margin-bottom:12px;">
+        <div style="font-size:28px;">📄</div>
+        <p style="font-size:13px;color:var(--mist);margin-top:6px;">Tap to upload your timetable</p>
+        <p style="font-size:11px;color:rgba(127,168,196,0.5);">PDF, JPG, PNG accepted</p>
+      </div>
+      <input type="file" id="ttUpload" accept=".pdf,image/*" style="display:none" onchange="showToast('Timetable uploaded ✅')">
+      <div style="text-align:center;font-size:12px;color:var(--mist);margin:8px 0;">— or —</div>
+      <div style="background:rgba(0,217,184,0.05);border:1px solid rgba(0,217,184,0.12);border-radius:12px;padding:12px;font-size:12px;color:var(--mist);line-height:1.6;margin-bottom:12px;">
+        📡 <strong style="color:var(--white);">No timetable yet?</strong> We automatically fetch official CXC exam dates from <strong style="color:var(--teal);">cxc.org</strong> based on your subjects. Your exam calendar updates the moment CXC releases dates and you will be notified.
+      </div>
+      <button class="btn btn-primary" onclick="obNext(5)">Continue →</button>
+      <button class="btn btn-ghost" onclick="obNext(3)" style="margin-top:6px;">← Back</button>
+    </div>
+
+    <!-- Step 5: Ready for diagnostic -->
+    <div class="ob-step" id="ob-step5">
+      <div class="ob-title">Almost there! 🎯</div>
+      <div class="ob-sub">Before we build your personalised recovery plan, you'll complete a short <strong>diagnostic test</strong> for each of your subjects. This is structured like a real CXC/CAPE paper — multiple choice, short answer, and diagram labelling.<br><br>Don't worry — there are no wrong answers here. This helps us find exactly where the gaps are so your plan is built for <em>you</em>.</div>
+      <div style="background:rgba(0,217,184,0.06);border:1px solid rgba(0,217,184,0.15);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--mist);margin-bottom:16px;">
+        ⏱ Estimated time: <strong style="color:var(--white);">25–40 minutes</strong> · You can pause and continue later
+      </div>
+      <button class="btn btn-primary" onclick="startDiagnostic()">Start Diagnostic Test →</button>
+      <button class="btn btn-ghost" onclick="obNext(4)" style="margin-top:6px;">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DIAGNOSTIC ===== -->
+<div id="screen-diagnostic" class="screen">
+  <div class="diag-header">
+    <div class="diag-info">
+      <h3>Diagnostic Assessment</h3>
+      <p id="diagSubjLabel">Mathematics — Section A</p>
+    </div>
+    <div class="diag-timer" id="diagTimer">45:00</div>
+  </div>
+
+  <div class="diag-body">
+    <!-- Section A: MCQ -->
+    <div class="section-badge">📝 Section A — Multiple Choice</div>
+
+    <div class="q-card">
+      <div class="q-num">Question 1 of 5</div>
+      <div class="q-text">Which of the following is the correct factorisation of x² + 5x + 6?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'mc1')"><div class="opt-letter">A</div>(x + 1)(x + 6)</div>
+        <div class="q-opt" onclick="selectOpt(this,'mc1')"><div class="opt-letter">B</div>(x + 2)(x + 3)</div>
+        <div class="q-opt" onclick="selectOpt(this,'mc1')"><div class="opt-letter">C</div>(x − 2)(x − 3)</div>
+        <div class="q-opt" onclick="selectOpt(this,'mc1')"><div class="opt-letter">D</div>(x + 6)(x − 1)</div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Question 2 of 5</div>
+      <div class="q-text">The gradient of the line passing through points (2, 3) and (6, 11) is:</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'mc2')"><div class="opt-letter">A</div>½</div>
+        <div class="q-opt" onclick="selectOpt(this,'mc2')"><div class="opt-letter">B</div>2</div>
+        <div class="q-opt" onclick="selectOpt(this,'mc2')"><div class="opt-letter">C</div>4</div>
+        <div class="q-opt" onclick="selectOpt(this,'mc2')"><div class="opt-letter">D</div>3</div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Question 3 of 5</div>
+      <div class="q-text">A shopkeeper buys an article for $240 and sells it for $300. What is the percentage profit?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'mc3')"><div class="opt-letter">A</div>20%</div>
+        <div class="q-opt" onclick="selectOpt(this,'mc3')"><div class="opt-letter">B</div>25%</div>
+        <div class="q-opt" onclick="selectOpt(this,'mc3')"><div class="opt-letter">C</div>60%</div>
+        <div class="q-opt" onclick="selectOpt(this,'mc3')"><div class="opt-letter">D</div>15%</div>
+      </div>
+    </div>
+
+    <!-- Section B: Short Answer -->
+    <div class="section-badge" style="margin-top:16px;">✏️ Section B — Short Answer</div>
+
+    <div class="q-card">
+      <div class="q-num">Question 4</div>
+      <div class="q-text">Solve the equation: 2x² − 8x = 0. Show all working. <em style="color:var(--mist);font-size:12px;">[4 marks]</em></div>
+      <textarea class="short-ans" id="sa1" placeholder="Write your solution here…"></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num">Question 5</div>
+      <div class="q-text">A rectangle has a length of (2x + 3) cm and a width of (x − 1) cm. Write an expression for the area and expand fully. <em style="color:var(--mist);font-size:12px;">[3 marks]</em></div>
+      <textarea class="short-ans" id="sa2" placeholder="Write your expression here…"></textarea>
+    </div>
+
+    <!-- Section C: Diagram -->
+    <div class="section-badge" style="margin-top:16px;">🔬 Section C — Diagram Labelling</div>
+
+    <div class="q-card">
+      <div class="q-num">Question 6</div>
+      <div class="q-text">Label the parts of the animal cell shown below. <em style="color:var(--mist);font-size:12px;">[5 marks]</em></div>
+      <div class="diag-diagram">
+        <svg class="diagram-svg" viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg">
+          <!-- Cell membrane -->
+          <ellipse cx="130" cy="90" rx="115" ry="75" fill="rgba(0,217,184,0.05)" stroke="rgba(0,217,184,0.4)" stroke-width="2" stroke-dasharray="4,2"/>
+          <!-- Nucleus -->
+          <ellipse cx="120" cy="88" rx="35" ry="28" fill="rgba(139,124,248,0.1)" stroke="rgba(139,124,248,0.5)" stroke-width="1.5"/>
+          <!-- Nucleolus -->
+          <ellipse cx="118" cy="86" rx="10" ry="8" fill="rgba(139,124,248,0.3)" stroke="rgba(139,124,248,0.6)" stroke-width="1"/>
+          <!-- Mitochondria -->
+          <ellipse cx="200" cy="65" rx="20" ry="11" fill="rgba(240,148,77,0.1)" stroke="rgba(240,148,77,0.5)" stroke-width="1.5"/>
+          <path d="M188,65 Q200,58 212,65" fill="none" stroke="rgba(240,148,77,0.4)" stroke-width="1"/>
+          <!-- Vacuole -->
+          <ellipse cx="75" cy="115" rx="18" ry="14" fill="rgba(0,217,184,0.08)" stroke="rgba(0,217,184,0.3)" stroke-width="1"/>
+          <!-- Lines to labels -->
+          <line x1="245" y1="90" x2="200" y2="90" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="3,2"/>
+          <line x1="245" y1="60" x2="222" y2="63" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="3,2"/>
+          <line x1="245" y1="120" x2="120" y2="112" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="3,2"/>
+          <line x1="245" y1="140" x2="93" y2="118" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="3,2"/>
+          <!-- Arrow points -->
+          <circle cx="200" cy="90" r="3" fill="rgba(0,217,184,0.4)"/>
+          <circle cx="222" cy="63" r="3" fill="rgba(240,148,77,0.4)"/>
+          <circle cx="120" cy="112" r="3" fill="rgba(139,124,248,0.4)"/>
+          <circle cx="93" cy="118" r="3" fill="rgba(0,217,184,0.3)"/>
+        </svg>
+        <div style="display:flex;flex-direction:column;gap:7px;margin-top:6px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mist);">① <input class="label-input" placeholder="Label 1…"></div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mist);">② <input class="label-input" placeholder="Label 2…"></div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mist);">③ <input class="label-input" placeholder="Label 3…"></div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mist);">④ <input class="label-input" placeholder="Label 4…"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="diag-fixed-bottom" style="left:50%;transform:translateX(-50%);max-width:430px;">
+    <button class="btn btn-primary" onclick="submitDiagnostic()" style="margin-top:0;">Submit Diagnostic & View My Plan →</button>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="screen-app" class="screen">
+  <div class="app-header">
+    <div class="app-brand">Storm <span>Bridge</span> AI</div>
+    <div class="header-right">
+      <div class="notif-btn" onclick="openNotifCenter()">🔔</div>
+      <div class="avatar-sm" onclick="showToast('Profile coming soon')">👩🏾</div>
+    </div>
+  </div>
+
+  <div class="app-wrap">
+
+    <!-- HOME TAB -->
+    <div id="tab-home" class="tab-panel active">
+      <div class="hero-banner">
+        <div class="hero-top">
+          <div class="hero-avatar">👩🏾‍🎓</div>
+          <div>
+            <div class="hero-name" id="heroName">Aaliyah Brown</div>
+            <div class="hero-meta" id="heroMeta">Grade 11 · St. Thomas High School · CXC 2026</div>
+            <div class="recovery-pill">⚡ Recovery Plan Active — Week 3 of 6</div>
+          </div>
+        </div>
+        <div class="prog-row">
+          <div class="prog-box"><div class="prog-box-label">Mathematics <strong>68%</strong></div><div class="prog-bar"><div class="prog-fill" style="width:68%"></div></div></div>
+          <div class="prog-box"><div class="prog-box-label">English A <strong>74%</strong></div><div class="prog-bar"><div class="prog-fill" style="width:74%"></div></div></div>
+          <div class="prog-box"><div class="prog-box-label">Biology <strong>55%</strong></div><div class="prog-bar"><div class="prog-fill" style="width:55%"></div></div></div>
+          <div class="prog-box"><div class="prog-box-label">History <strong>81%</strong></div><div class="prog-bar"><div class="prog-fill" style="width:81%"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Exam Countdown -->
+      <div style="background:linear-gradient(135deg,rgba(245,200,66,0.08),rgba(240,148,77,0.05));border:1px solid rgba(245,200,66,0.18);border-radius:14px;padding:14px;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--gold);">📅 Exam Countdown</div>
+          <div style="font-size:10px;color:var(--mist);">CXC 2026 · Auto-synced</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:12px;font-weight:600;">Mathematics</span><span style="font-size:11px;color:var(--mist);">May 12, 2026</span><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:7px;background:rgba(224,92,92,0.1);color:var(--red);">Soon</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:12px;font-weight:600;">English A</span><span style="font-size:11px;color:var(--mist);">May 14, 2026</span><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:7px;background:rgba(224,92,92,0.1);color:var(--red);">Soon</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:12px;font-weight:600;">Biology</span><span style="font-size:11px;color:var(--mist);">May 19, 2026</span><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:7px;background:rgba(245,200,66,0.1);color:var(--gold);">4 days</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:12px;font-weight:600;">Caribbean History</span><span style="font-size:11px;color:var(--mist);">May 22, 2026</span><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:7px;background:rgba(0,217,184,0.08);color:var(--teal);">7 days</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;"><span style="font-size:12px;font-weight:600;">Principles of Accounts</span><span style="font-size:11px;color:var(--mist);">May 27, 2026</span><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:7px;background:rgba(0,217,184,0.08);color:var(--teal);">12 days</span></div>
+        <div style="font-size:10px;color:var(--mist);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04);">📡 Dates from cxc.org · Last synced May 2026</div>
+      </div>
+
+      <!-- Weekly Report -->
+      <div class="sec-title">📊 Weekly Progress Reports</div>
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-title">Week 3 Report</div>
+          <div class="report-date">May 12–18, 2026</div>
+        </div>
+        <div class="report-stats">
+          <div class="stat-box"><div class="stat-num">14</div><div class="stat-label">Lessons Done</div></div>
+          <div class="stat-box"><div class="stat-num">8.5h</div><div class="stat-label">Study Time</div></div>
+          <div class="stat-box"><div class="stat-num">+6%</div><div class="stat-label">Avg. Gain</div></div>
+        </div>
+        <div class="report-subjects">
+          <div class="rs-row"><div class="rs-name" style="font-size:11px;">Mathematics</div><div class="rs-bar"><div class="rs-fill" style="width:68%;background:linear-gradient(90deg,var(--teal),var(--teal2))"></div></div><div class="rs-pct">68%</div></div>
+          <div class="rs-row"><div class="rs-name" style="font-size:11px;">English A</div><div class="rs-bar"><div class="rs-fill" style="width:74%;background:linear-gradient(90deg,var(--gold),#d4a800)"></div></div><div class="rs-pct" style="color:var(--gold)">74%</div></div>
+          <div class="rs-row"><div class="rs-name" style="font-size:11px;">Biology</div><div class="rs-bar"><div class="rs-fill" style="width:55%;background:linear-gradient(90deg,var(--amber),#d07030)"></div></div><div class="rs-pct" style="color:var(--amber)">55%</div></div>
+          <div class="rs-row"><div class="rs-name" style="font-size:11px;">History</div><div class="rs-bar"><div class="rs-fill" style="width:81%;background:linear-gradient(90deg,var(--purple),#6b5ce7)"></div></div><div class="rs-pct" style="color:var(--purple)">81%</div></div>
+          <div class="rs-row"><div class="rs-name" style="font-size:11px;">Accounts</div><div class="rs-bar"><div class="rs-fill" style="width:32%;background:linear-gradient(90deg,var(--red),#c04040)"></div></div><div class="rs-pct" style="color:var(--red)">32%</div></div>
+        </div>
+        <div class="report-message" style="margin-top:12px;">"Aaliyah, you studied for 8.5 hours this week despite everything — that takes real strength. Your History score is outstanding at 81%, and Mathematics is climbing steadily. Keep showing up like this and you will walk into that exam hall ready. 🌟"</div>
+      </div>
+      <!-- Past reports list -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="showToast('Week 2 report opening…')">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,217,184,0.07);display:flex;align-items:center;justify-content:center;font-size:17px;">📊</div>
+        <div style="flex:1;"><div style="font-size:12px;font-weight:600;">Week 2 Report — May 5–11</div><div style="font-size:10px;color:var(--mist);">11 lessons · +4% avg gain</div></div>
+        <div style="font-size:14px;color:var(--mist);">›</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="showToast('Week 1 report opening…')">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,217,184,0.07);display:flex;align-items:center;justify-content:center;font-size:17px;">📊</div>
+        <div style="flex:1;"><div style="font-size:12px;font-weight:600;">Week 1 Report — Apr 28–May 4</div><div style="font-size:10px;color:var(--mist);">8 lessons · +3% avg gain</div></div>
+        <div style="font-size:14px;color:var(--mist);">›</div>
+      </div>
+
+      <!-- Today's Plan -->
+      <div class="sec-title">📅 Today's Schedule</div>
+      <div class="timetable">
+        <div class="tt-header"><h4>Wednesday · This Week</h4><div class="tt-week-badge">Week 3 of 6</div></div>
+        <div class="tt-row" onclick="toggleTT(this)"><div class="tt-day today">MON ✓</div><div class="tt-subjects">Mathematics: Quadratics <span>Biology: Cell Division</span></div><div class="tt-check done">✓</div></div>
+        <div class="tt-row" onclick="toggleTT(this)"><div class="tt-day today">TUE ✓</div><div class="tt-subjects">English: Comprehension <span>History: Federation</span></div><div class="tt-check done">✓</div></div>
+        <div class="tt-row" onclick="toggleTT(this)"><div class="tt-day today">WED</div><div class="tt-subjects">English: Summary Writing <span>Accounts: Trial Balance</span></div><div class="tt-check"></div></div>
+        <div class="tt-row" onclick="toggleTT(this)"><div class="tt-day">THU</div><div class="tt-subjects">Maths: Past Paper Practice <span>Biology: Genetics</span></div><div class="tt-check"></div></div>
+        <div class="tt-row" onclick="toggleTT(this)"><div class="tt-day">FRI</div><div class="tt-subjects">History: Essay Practice <span>English: Vocabulary</span></div><div class="tt-check"></div></div>
+        <div class="tt-row" onclick="toggleTT(this)"><div class="tt-day">SAT</div><div class="tt-subjects">Community Hub Session <span>All subjects revision</span></div><div class="tt-check"></div></div>
+      </div>
+    </div>
+
+    <!-- CLASSROOM TAB -->
+    <div id="tab-classroom" class="tab-panel">
+      <div class="offline-note">✅ All content below works offline after first load</div>
+
+      <div class="sec-title">📚 Priority Lessons</div>
+      <div class="lesson-card" onclick="openLesson('math1')">
+        <div class="lc-stripe" style="background:var(--teal)"></div>
+        <div class="lc-top"><div class="lc-subj" style="color:var(--teal)">Mathematics</div><div class="lc-prog-pill">35% done</div></div>
+        <div class="lc-title">Quadratic Equations & Functions</div>
+        <div class="lc-desc">Factoring, completing the square, graphing parabolas. CXC Paper 2 high-yield topic.</div>
+        <div class="lc-tags"><span class="tag offline">📴 Offline</span><span class="tag video">▶ 3 Videos</span><span class="tag">⏱ 45 min</span><span class="tag">🎯 Priority</span></div>
+      </div>
+      <div class="lesson-card" onclick="openLesson('eng1')">
+        <div class="lc-stripe" style="background:var(--gold)"></div>
+        <div class="lc-top"><div class="lc-subj" style="color:var(--gold)">English A</div><div class="lc-prog-pill">60% done</div></div>
+        <div class="lc-title">Summary Writing Techniques</div>
+        <div class="lc-desc">The 8-step CXC method. 3 practice passages with model answers included.</div>
+        <div class="lc-tags"><span class="tag offline">📴 Offline</span><span class="tag print">🖨 Printable</span><span class="tag video">▶ 2 Videos</span><span class="tag">⏱ 30 min</span></div>
+      </div>
+      <div class="lesson-card" onclick="openLesson('bio1')">
+        <div class="lc-stripe" style="background:var(--amber)"></div>
+        <div class="lc-top"><div class="lc-subj" style="color:var(--amber)">Biology</div><div class="lc-prog-pill">20% done</div></div>
+        <div class="lc-title">Cell Biology & Genetics</div>
+        <div class="lc-desc">Mitosis, meiosis, DNA structure, Mendelian genetics. Diagrams included.</div>
+        <div class="lc-tags"><span class="tag offline">📴 Offline</span><span class="tag video">▶ 4 Videos</span><span class="tag">⏱ 60 min</span><span class="tag">⚠️ Needs attention</span></div>
+      </div>
+      <div class="lesson-card" onclick="openLesson('hist1')">
+        <div class="lc-stripe" style="background:var(--purple)"></div>
+        <div class="lc-top"><div class="lc-subj" style="color:var(--purple)">Caribbean History</div><div class="lc-prog-pill">75% done</div></div>
+        <div class="lc-title">Independence Movements 1940–1980</div>
+        <div class="lc-desc">Decolonisation, the Federation, key figures. Timeline flashcards included.</div>
+        <div class="lc-tags"><span class="tag print">🖨 Printable</span><span class="tag video">▶ 2 Videos</span><span class="tag">⏱ 40 min</span></div>
+      </div>
+      <div class="lesson-card" onclick="openLesson('acc1')">
+        <div class="lc-stripe" style="background:var(--red)"></div>
+        <div class="lc-top"><div class="lc-subj" style="color:var(--red)">Principles of Accounts</div><div class="lc-prog-pill">10% done</div></div>
+        <div class="lc-title">Trial Balance & Financial Statements</div>
+        <div class="lc-desc">Step-by-step guide. Income statement, balance sheet, worked examples.</div>
+        <div class="lc-tags"><span class="tag offline">📴 Offline</span><span class="tag print">🖨 Printable</span><span class="tag video">▶ 3 Videos</span><span class="tag">⚠️ Urgent</span></div>
+      </div>
+
+      <!-- YouTube Videos Section -->
+      <div class="sec-title">▶ Topic Videos</div>
+      <div class="offline-note">📥 Tap a video to cache it for offline use at a community hub</div>
+      <div class="video-card" onclick="showToast('Video cached for offline use ✅')">
+        <div class="video-thumb">🎬<div class="video-play">▶</div></div>
+        <div class="video-info">
+          <div class="video-title">Quadratic Equations — Complete CXC Guide</div>
+          <div class="video-meta">PatrickJMT · 18 min</div>
+          <div class="video-offline-badge">📴 Cache offline</div>
+        </div>
+      </div>
+      <div class="video-card" onclick="showToast('Video cached for offline use ✅')">
+        <div class="video-thumb">🎬<div class="video-play">▶</div></div>
+        <div class="video-info">
+          <div class="video-title">CXC English Summary Writing — 8-Step Method</div>
+          <div class="video-meta">Caribbean Tutors · 14 min</div>
+          <div class="video-offline-badge">📴 Cache offline</div>
+        </div>
+      </div>
+      <div class="video-card" onclick="showToast('Video cached for offline use ✅')">
+        <div class="video-thumb">🎬<div class="video-play">▶</div></div>
+        <div class="video-info">
+          <div class="video-title">Mitosis vs Meiosis — Animated Explanation</div>
+          <div class="video-meta">Amoeba Sisters · 13 min</div>
+          <div class="video-offline-badge">📴 Cache offline</div>
+        </div>
+      </div>
+      <div class="video-card" onclick="showToast('Video cached for offline use ✅')">
+        <div class="video-thumb">🎬<div class="video-play">▶</div></div>
+        <div class="video-info">
+          <div class="video-title">West Indies Federation — Caribbean History CXC</div>
+          <div class="video-meta">CXC Study Zone · 22 min</div>
+          <div class="video-offline-badge">📴 Cache offline</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUTOR TAB -->
+    <div id="tab-tutor" class="tab-panel">
+      <div class="tutor-box">
+        <div class="tutor-header">
+          <div class="tutor-avatar">🤖</div>
+          <div>
+            <div class="tutor-name">Nova — AI Tutor</div>
+            <div class="tutor-status">● Online · CXC & CAPE Specialist</div>
+          </div>
+        </div>
+        <div class="chat-msgs" id="chatMsgs">
+          <div class="msg ai">Hey Aaliyah 👋 I'm Nova. I've reviewed your diagnostic results and your current scores — and I'm here to help you close every gap before your CXC exams.<br><br>Your strongest subject is Caribbean History at 81% — brilliant! Your biggest opportunity right now is Principles of Accounts at 32%. Want me to start there, or is there something specific on your mind?</div>
+        </div>
+        <div class="quick-qs">
+          <div class="qq" onclick="quickQ('Explain quadratic equations in simple terms')">Quadratics help</div>
+          <div class="qq" onclick="quickQ('How do I improve my Accounts score quickly?')">Accounts tips</div>
+          <div class="qq" onclick="quickQ('What topics should I focus on for CXC Biology?')">Biology focus</div>
+          <div class="qq" onclick="quickQ('I feel stressed and behind — what should I do?')">I feel behind</div>
+          <div class="qq" onclick="quickQ('Give me a practice question for English summary writing')">Practice question</div>
+        </div>
+        <div class="chat-input-row">
+          <textarea class="chat-inp" id="chatInp" rows="1" placeholder="Ask Nova anything…" onkeydown="handleKey(event)"></textarea>
+          <button class="send-btn" onclick="sendMsg()">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESOURCES TAB -->
+    <div id="tab-resources" class="tab-panel">
+      <div class="sec-title">📄 Past Papers — CXC</div>
+      <div class="offline-note">🖨 Print at a community hub · 📝 Take as timed quiz</div>
+
+      <div class="paper-card">
+        <div class="paper-top"><div class="paper-year">Mathematics — 2024</div><div class="paper-actions"><button class="paper-btn quiz" onclick="showToast('Starting quiz…')">📝 Quiz</button><button class="paper-btn print" onclick="showToast('Opening print view…')">🖨 Print</button></div></div>
+        <div class="paper-sub">Paper 1 (MCQ, 60 questions) + Paper 2 (Structured) · CXC/CSEC</div>
+      </div>
+      <div class="paper-card">
+        <div class="paper-top"><div class="paper-year">Mathematics — 2023</div><div class="paper-actions"><button class="paper-btn quiz" onclick="showToast('Starting quiz…')">📝 Quiz</button><button class="paper-btn print" onclick="showToast('Opening print view…')">🖨 Print</button></div></div>
+        <div class="paper-sub">Paper 1 (MCQ, 60 questions) + Paper 2 (Structured) · CXC/CSEC</div>
+      </div>
+      <div class="paper-card">
+        <div class="paper-top"><div class="paper-year">English A — 2024</div><div class="paper-actions"><button class="paper-btn quiz" onclick="showToast('Starting quiz…')">📝 Quiz</button><button class="paper-btn print" onclick="showToast('Opening print view…')">🖨 Print</button></div></div>
+        <div class="paper-sub">Paper 2 (Comprehension + Summary + Writing) · CXC/CSEC</div>
+      </div>
+      <div class="paper-card">
+        <div class="paper-top"><div class="paper-year">Biology — 2024</div><div class="paper-actions"><button class="paper-btn quiz" onclick="showToast('Starting quiz…')">📝 Quiz</button><button class="paper-btn print" onclick="showToast('Opening print view…')">🖨 Print</button></div></div>
+        <div class="paper-sub">Paper 1 (MCQ) + Paper 2 (Short Answer + Essays) + Paper 3 (SBA)</div>
+      </div>
+      <div class="paper-card">
+        <div class="paper-top"><div class="paper-year">Caribbean History — 2023</div><div class="paper-actions"><button class="paper-btn quiz" onclick="showToast('Starting quiz…')">📝 Quiz</button><button class="paper-btn print" onclick="showToast('Opening print view…')">🖨 Print</button></div></div>
+        <div class="paper-sub">Paper 1 (MCQ) + Paper 2 (Source-Based + Essays) · CXC/CSEC</div>
+      </div>
+
+      <div class="sec-title">📄 Past Papers — CAPE</div>
+      <div class="paper-card">
+        <div class="paper-top"><div class="paper-year">Biology Unit 1 — 2024</div><div class="paper-actions"><button class="paper-btn quiz" onclick="showToast('Starting quiz…')">📝 Quiz</button><button class="paper-btn print" onclick="showToast('Opening print view…')">🖨 Print</button></div></div>
+        <div class="paper-sub">Paper 1 (MCQ) + Paper 2 (Structured) + Paper 3 (IA) · CAPE</div>
+      </div>
+      <div class="paper-card">
+        <div class="paper-top"><div class="paper-year">Pure Mathematics Unit 1 — 2024</div><div class="paper-actions"><button class="paper-btn quiz" onclick="showToast('Starting quiz…')">📝 Quiz</button><button class="paper-btn print" onclick="showToast('Opening print view…')">🖨 Print</button></div></div>
+        <div class="paper-sub">Paper 1 (MCQ) + Paper 2 (Extended) + Paper 3 · CAPE</div>
+      </div>
+
+      <div class="sec-title">🖨 Printable Study Packs</div>
+      <div class="res-card" onclick="showToast('Opening PDF…')"><div class="res-icon" style="background:rgba(240,148,77,0.1)">🖨</div><div class="res-info"><div class="res-title">Mathematics Formula Sheet</div><div class="res-sub">All CXC required formulae — 2 pages</div></div><div class="res-badge">PDF</div></div>
+      <div class="res-card" onclick="showToast('Opening PDF…')"><div class="res-icon" style="background:rgba(240,148,77,0.1)">🖨</div><div class="res-info"><div class="res-title">Biology Diagram Pack</div><div class="res-sub">Cell, genetics, ecosystems — label-and-learn</div></div><div class="res-badge">PDF</div></div>
+      <div class="res-card" onclick="showToast('Opening PDF…')"><div class="res-icon" style="background:rgba(240,148,77,0.1)">🖨</div><div class="res-info"><div class="res-title">Caribbean History Flashcards</div><div class="res-sub">Cut-out cards — dates, figures, events</div></div><div class="res-badge">PDF</div></div>
+      <div class="res-card" onclick="showToast('Downloading…')"><div class="res-icon" style="background:rgba(0,217,184,0.08)">📴</div><div class="res-info"><div class="res-title">Full CXC Maths Offline Pack</div><div class="res-sub">24 lessons — no internet needed · 180MB</div></div><div class="res-badge">Offline</div></div>
+    </div>
+
+    <!-- SCHOOL DASHBOARD TAB -->
+    <div id="tab-school" class="tab-panel">
+      <div class="dash-tabs">
+        <button class="dtab active" onclick="switchDash('overview',this)">Overview</button>
+        <button class="dtab" onclick="switchDash('students',this)">Students</button>
+        <button class="dtab" onclick="switchDash('alerts',this)">Alerts</button>
+        <button class="dtab" onclick="switchDash('contact',this)">Contact</button>
+      </div>
+
+      <!-- Overview -->
+      <div id="dash-overview" class="dpanel active">
+        <div style="font-size:12px;color:var(--mist);margin-bottom:12px;">St. Thomas High School · Hurricane Recovery Dashboard</div>
+        <div class="school-stat-row">
+          <div class="sch-stat"><div class="sch-stat-num">47</div><div class="sch-stat-label">Active Students</div></div>
+          <div class="sch-stat"><div class="sch-stat-num">+8%</div><div class="sch-stat-label">Avg. Weekly Gain</div></div>
+          <div class="sch-stat"><div class="sch-stat-num">89%</div><div class="sch-stat-label">Weekly Engagement</div></div>
+          <div class="sch-stat"><div class="sch-stat-num">5</div><div class="sch-stat-label">Need Support</div></div>
+        </div>
+        <div class="report-card">
+          <div class="report-header"><div class="report-title">School Weekly Report</div><div class="report-date">Week 3</div></div>
+          <div class="report-subjects">
+            <div class="rs-row"><div class="rs-name" style="font-size:11px;">Mathematics</div><div class="rs-bar"><div class="rs-fill" style="width:62%;background:linear-gradient(90deg,var(--teal),var(--teal2))"></div></div><div class="rs-pct">62%</div></div>
+            <div class="rs-row"><div class="rs-name" style="font-size:11px;">English A</div><div class="rs-bar"><div class="rs-fill" style="width:71%;background:linear-gradient(90deg,var(--gold),#d4a800)"></div></div><div class="rs-pct" style="color:var(--gold)">71%</div></div>
+            <div class="rs-row"><div class="rs-name" style="font-size:11px;">Biology</div><div class="rs-bar"><div class="rs-fill" style="width:58%;background:linear-gradient(90deg,var(--amber),#d07030)"></div></div><div class="rs-pct" style="color:var(--amber)">58%</div></div>
+            <div class="rs-row"><div class="rs-name" style="font-size:11px;">History</div><div class="rs-bar"><div class="rs-fill" style="width:77%;background:linear-gradient(90deg,var(--purple),#6b5ce7)"></div></div><div class="rs-pct" style="color:var(--purple)">77%</div></div>
+          </div>
+          <div class="report-message" style="margin-top:12px;">"Your students are showing remarkable resilience. 89% have engaged with their plans this week despite ongoing recovery challenges. Mathematics needs the most support — consider a group session at the Morant Bay Hub this Saturday."</div>
+        </div>
+      </div>
+
+      <!-- Students -->
+      <div id="dash-students" class="dpanel">
+        <div style="background:linear-gradient(90deg,rgba(0,217,184,0.07),transparent);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:700;">🏫 St. Thomas High School</div>
+          <div style="font-size:11px;color:var(--mist);">5 students · 2 teachers</div>
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(139,124,248,0.06),transparent);border:1px solid rgba(139,124,248,0.15);border-radius:12px;padding:10px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d07030);display:flex;align-items:center;justify-content:center;font-size:14px;">👩🏽‍🏫</div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;">Ms. Campbell</div><div style="font-size:10px;color:var(--mist);">Teacher · Mathematics</div></div>
+          <div style="font-size:10px;color:var(--purple);background:rgba(139,124,248,0.08);padding:2px 8px;border-radius:7px;">Staff</div>
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(139,124,248,0.06),transparent);border:1px solid rgba(139,124,248,0.15);border-radius:12px;padding:10px 13px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d07030);display:flex;align-items:center;justify-content:center;font-size:14px;">👨🏾‍🏫</div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;">Mr. Blake</div><div style="font-size:10px;color:var(--mist);">Teacher · English A</div></div>
+          <div style="font-size:10px;color:var(--purple);background:rgba(139,124,248,0.08);padding:2px 8px;border-radius:7px;">Staff</div>
+        </div>
+        <div id="teacher-view-students" style="display:none;">
+          <div class="student-row"><div class="stu-avatar">👩🏾</div><div class="stu-info"><div class="stu-name">Aaliyah Brown</div><div class="stu-meta">Grade 11 · 5 subjects · <span style="color:var(--green)">● Active today</span></div></div><div class="stu-score"><div class="stu-pct">69%</div><div class="stu-trend">↑ +6%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👦🏽</div><div class="stu-info"><div class="stu-name">Marcus Reid</div><div class="stu-meta">Grade 11 · 6 subjects · <span style="color:var(--green)">● Active today</span></div></div><div class="stu-score"><div class="stu-pct">74%</div><div class="stu-trend">↑ +9%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👧🏿</div><div class="stu-info"><div class="stu-name">Kezia Thompson</div><div class="stu-meta">Grade 11 · 5 subjects · <span style="color:var(--mist)">○ 2 days ago</span></div></div><div class="stu-score"><div class="stu-pct">58%</div><div class="stu-trend" style="color:var(--amber)">↑ +3%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👦🏾</div><div class="stu-info"><div class="stu-name">Damion Clarke</div><div class="stu-meta">Grade 11 · 4 subjects · <span style="color:var(--red)">○ 5 days ago</span></div></div><div class="stu-score"><div class="stu-pct" style="color:var(--red)">41%</div><div class="stu-trend" style="color:var(--mist)">— 0%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👩🏽</div><div class="stu-info"><div class="stu-name">Shanice Morgan</div><div class="stu-meta">Grade 11 · 5 subjects · <span style="color:var(--green)">● Active today</span></div></div><div class="stu-score"><div class="stu-pct">82%</div><div class="stu-trend">↑ +11%</div></div></div>
+        </div>
+        <div id="student-view-students">
+          <div class="student-row"><div class="stu-avatar">👩🏾</div><div class="stu-info"><div class="stu-name">Aaliyah Brown</div><div class="stu-meta">Grade 11 · <span style="color:var(--green)">● Online now</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👦🏽</div><div class="stu-info"><div class="stu-name">Marcus Reid</div><div class="stu-meta">Grade 11 · <span style="color:var(--green)">● Online now</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👧🏿</div><div class="stu-info"><div class="stu-name">Kezia Thompson</div><div class="stu-meta">Grade 11 · <span style="color:var(--mist)">○ Offline</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👦🏾</div><div class="stu-info"><div class="stu-name">Damion Clarke</div><div class="stu-meta">Grade 11 · <span style="color:var(--mist)">○ Offline</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👩🏽</div><div class="stu-info"><div class="stu-name">Shanice Morgan</div><div class="stu-meta">Grade 11 · <span style="color:var(--green)">● Online now</span></div></div></div>
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(0,217,184,0.07),transparent);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin:12px 0 8px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:700;">🏫 Morant Bay High School</div>
+          <div style="font-size:11px;color:var(--mist);">2 students · 1 teacher</div>
+        </div>
+        <div style="background:linear-gradient(90deg,rgba(139,124,248,0.06),transparent);border:1px solid rgba(139,124,248,0.15);border-radius:12px;padding:10px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d07030);display:flex;align-items:center;justify-content:center;font-size:14px;">👨🏾‍🏫</div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;">Mr. Watson</div><div style="font-size:10px;color:var(--mist);">Teacher · Mathematics / Physics</div></div>
+          <div style="font-size:10px;color:var(--purple);background:rgba(139,124,248,0.08);padding:2px 8px;border-radius:7px;">Staff</div>
+        </div>
+        <div id="teacher-view-mb" style="display:none;">
+          <div class="student-row"><div class="stu-avatar">👦🏿</div><div class="stu-info"><div class="stu-name">Leroy Williams</div><div class="stu-meta">Grade 11 · 3 subjects · <span style="color:var(--red)">○ 8 days ago</span></div></div><div class="stu-score"><div class="stu-pct" style="color:var(--red)">29%</div><div class="stu-trend" style="color:var(--red)">↓ −2%</div></div></div>
+          <div class="student-row"><div class="stu-avatar">👧🏽</div><div class="stu-info"><div class="stu-name">Tricia James</div><div class="stu-meta">Grade 10 · 4 subjects · <span style="color:var(--green)">● Active today</span></div></div><div class="stu-score"><div class="stu-pct">65%</div><div class="stu-trend">↑ +5%</div></div></div>
+        </div>
+        <div id="student-view-mb">
+          <div class="student-row"><div class="stu-avatar">👦🏿</div><div class="stu-info"><div class="stu-name">Leroy Williams</div><div class="stu-meta">Grade 11 · <span style="color:var(--mist)">○ Offline</span></div></div></div>
+          <div class="student-row"><div class="stu-avatar">👧🏽</div><div class="stu-info"><div class="stu-name">Tricia James</div><div class="stu-meta">Grade 10 · <span style="color:var(--green)">● Online now</span></div></div></div>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <div id="dash-alerts" class="dpanel">
+        <div class="alert-item">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-text">
+            <strong>Damion Clarke</strong> has not logged in for 5 days. His Accounts score has stalled at 41%. He may need additional support or home visit.
+            <br><button class="contact-btn" onclick="showToast('Message sent to Damion Clarke ✅')">📨 Contact Student</button>
+          </div>
+        </div>
+        <div class="alert-item">
+          <div class="alert-icon">🔴</div>
+          <div class="alert-text">
+            <strong>Leroy Williams</strong> has been inactive for 8 days and his average score has dropped. Family may be still displaced. Urgent follow-up recommended.
+            <br><button class="contact-btn" onclick="showToast('Alert sent to school admin ✅')">🚨 Flag to Admin</button>
+          </div>
+        </div>
+        <div class="alert-item" style="background:rgba(245,200,66,0.05);border-color:rgba(245,200,66,0.15);">
+          <div class="alert-icon">📊</div>
+          <div class="alert-text" style="color:#f5e8a0;">
+            <strong>Biology class average (58%)</strong> is below target. 12 students score under 50%. Consider a focused Biology session at the community hub this week.
+            <br><button class="contact-btn" style="background:rgba(245,200,66,0.1);color:var(--gold);" onclick="showToast('Hub session scheduled ✅')">📅 Schedule Hub Session</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div id="dash-contact" class="dpanel">
+        <div style="font-size:13px;color:var(--mist);margin-bottom:14px;line-height:1.5;">Send messages, progress reports and encouragement directly to students or their families.</div>
+        <div class="form-group"><label>Send To</label>
+          <select id="contactSendTo">
+            <option value="teacher">Ms. Campbell — Mathematics Teacher</option>
+            <option value="teacher">Mr. Blake — English A Teacher</option>
+            <option value="teacher">Ms. Reid — Accounts / Biology Teacher</option>
+            <option value="principal">Principal — St. Thomas High School</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Select Report to Send</label>
+          <select>
+            <option>Week 3 Progress Report — May 12–18</option>
+            <option>Week 2 Progress Report — May 5–11</option>
+            <option>Week 1 Progress Report — Apr 28 – May 4</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Message</label>
+          <textarea style="min-height:100px;font-size:13px;" placeholder="Write your message here…">Dear student, we wanted to check in on you this week and let you know that your school community is here to support you through your recovery. You are doing an amazing job — keep going! 💙</textarea>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Message sent successfully ✅')" style="margin-top:0;">📨 Send Message</button>
+        <button class="btn btn-ghost" style="margin-top:8px;" onclick="showToast('Report emailed to all teachers ✅')">📊 Email Weekly Report to Teachers</button>
+      </div>
+    </div>
+
+  </div><!-- /app-wrap -->
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home',this)"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item" onclick="switchTab('classroom',this)"><div class="nav-icon">📚</div><div class="nav-label">Learn</div></div>
+    <div class="nav-item" onclick="switchTab('tutor',this)"><div class="nav-icon">🤖</div><div class="nav-label">Nova</div></div>
+    <div class="nav-item" onclick="switchTab('resources',this)"><div class="nav-icon">📄</div><div class="nav-label">Papers</div></div>
+    <div class="nav-item" onclick="switchTab('school',this)"><div class="nav-icon">🏫</div><div class="nav-label">School</div></div>
+  </div>
+</div>
+
+<!-- LESSON MODAL -->
+<div class="modal-overlay" id="lessonModal" onclick="closeModals(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-sub" id="mSub"></div>
+    <div class="modal-section-title">What you'll learn</div>
+    <div class="modal-content" id="mContent"></div>
+    <div class="modal-section-title">🤖 Nova's tip for you</div>
+    <div class="encourage-box" id="mTip"></div>
+    <div class="modal-section-title">📅 Timetable Slot</div>
+    <div class="modal-content" id="mSchedule"></div>
+    <button class="modal-btn" onclick="completeLesson()">▶ Start Lesson</button>
+  </div>
+</div>
+
+<!-- ENCOURAGEMENT OVERLAY -->
+<div class="encourage-overlay" id="encOverlay">
+  <div class="encourage-card">
+    <div class="enc-emoji">🎉</div>
+    <div class="enc-title">Lesson Complete!</div>
+    <div class="enc-score" id="encScore">+4%</div>
+    <div class="enc-sub">Score improvement this session</div>
+    <div class="enc-msg" id="encMsg">Amazing work, Aaliyah! Every lesson you complete is a bridge between where you are and where you need to be. You're building something real. Keep going! 🌟</div>
+    <button class="enc-btn" onclick="closeEnc()">Continue Learning →</button>
+  </div>
+</div>
+
+<!-- NOTIFICATION CENTER -->
+<div id="notifCenter" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:150;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);" onclick="closeNotifCenter(event)">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-width:430px;animation:slideUp .3s ease;max-height:80vh;overflow-y:auto;">
+    <div style="width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);margin:0 auto 14px;"></div>
+    <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin-bottom:14px;">Notifications</div>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--mist);font-weight:700;margin-bottom:7px;">Today — May 23, 2026</div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(0,217,184,0.05);border:1px solid rgba(0,217,184,0.1);border-radius:10px;margin-bottom:5px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">📊</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Week 3 Progress Report Ready</div><div style="font-size:11px;color:var(--mist);">You've gained +6% across all subjects this week.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">9:00 AM</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(0,217,184,0.05);border:1px solid rgba(0,217,184,0.1);border-radius:10px;margin-bottom:5px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">⏰</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Exam Alert — Mathematics</div><div style="font-size:11px;color:var(--mist);">Your CXC Mathematics exam is very soon. Review quadratics today.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">8:00 AM</div>
+    </div>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--mist);font-weight:700;margin:12px 0 7px;">Yesterday — May 22, 2026</div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:10px;margin-bottom:5px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">✅</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Lesson Completed</div><div style="font-size:11px;color:var(--mist);">You completed Caribbean History — Independence Movements. +5% added.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">4:30 PM</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:10px;margin-bottom:5px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">👩🏽‍🏫</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Teacher Comment</div><div style="font-size:11px;color:var(--mist);">Ms. Campbell left a comment on your Accounts lesson plan.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">2:15 PM</div>
+    </div>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--mist);font-weight:700;margin:12px 0 7px;">May 20, 2026</div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:10px;cursor:pointer;">
+      <div style="font-size:20px;flex-shrink:0;">📅</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:2px;">CXC Timetable Updated</div><div style="font-size:11px;color:var(--mist);">Official exam dates fetched from cxc.org and added to your calendar.</div></div>
+      <div style="font-size:10px;color:rgba(127,168,196,0.5);">10:00 AM</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const CLAUDE_MODEL = "claude-sonnet-4-20250514";
+let appRole = 'student';
+let pfpDataUrl = null;
+
+// ===== ONBOARDING =====
+let currentOBStep = 0;
+function obNext(step) {
+  document.getElementById(`ob-step${currentOBStep}`).classList.remove('active');
+  document.getElementById(`ob-step${step}`).classList.add('active');
+  currentOBStep = step;
+  for (let i=1;i<=5;i++) {
+    document.getElementById(`dot${i}`) && document.getElementById(`dot${i}`).classList.toggle('done', i<=step);
+  }
+}
+function selectRole(r) {
+  appRole = r;
+  const s = document.getElementById('role-student');
+  const t = document.getElementById('role-teacher');
+  if(r==='student'){
+    s.style.background='rgba(0,217,184,0.08)'; s.style.borderColor='rgba(0,217,184,0.4)';
+    t.style.background='rgba(255,255,255,0.04)'; t.style.borderColor='var(--border2)';
+  } else {
+    t.style.background='rgba(0,217,184,0.08)'; t.style.borderColor='rgba(0,217,184,0.4)';
+    s.style.background='rgba(255,255,255,0.04)'; s.style.borderColor='var(--border2)';
+  }
+}
+function handlePfpOB(e) {
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pfpDataUrl = ev.target.result;
+    document.getElementById('pfpPreview').innerHTML = `<img src="${pfpDataUrl}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;">`;
+    showToast('Photo uploaded ✅');
+  };
+  reader.readAsDataURL(f);
+}
+function selectChip(el, group) {
+  el.closest('.chip-group').querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function toggleChip(el) { el.classList.toggle('selected'); }
+
+function startDiagnostic() {
+  const name = document.getElementById('ob-name').value || 'Student';
+  const school = document.getElementById('ob-school') ? document.getElementById('ob-school').value : 'School';
+  document.getElementById('heroName').textContent = name;
+  document.getElementById('heroMeta').textContent = `Grade 11 · ${school} · CXC 2026`;
+  if(pfpDataUrl) {
+    ['headerAvatar','heroAvatar'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.innerHTML=`<img src="${pfpDataUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    });
+  }
+  // Teacher: no Nova tab
+  if(appRole==='teacher') {
+    const novaTab = document.querySelector('.tab[onclick*="tutor"]');
+    if(novaTab) novaTab.style.display='none';
+    document.getElementById('tab-tutor') && (document.getElementById('tab-tutor').style.display='none');
+  }
+  showScreen('screen-diagnostic');
+  startTimer(45*60);
+}
+
+// ===== SCREENS =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===== DIAGNOSTIC =====
+let timerInterval;
+function startTimer(seconds) {
+  let s = seconds;
+  timerInterval = setInterval(() => {
+    s--;
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = (s%60).toString().padStart(2,'0');
+    document.getElementById('diagTimer').textContent = `${m}:${sec}`;
+    if (s<=0) clearInterval(timerInterval);
+  }, 1000);
+}
+function selectOpt(el, group) {
+  el.closest('.q-options').querySelectorAll('.q-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function submitDiagnostic() {
+  clearInterval(timerInterval);
+  // Activate plan on home
+  const banner = document.getElementById('diagBannerWrap');
+  if(banner) banner.style.display='none';
+  showScreen('screen-app');
+  showToast('Diagnostic complete! Recovery plan activated 🎉');
+}
+
+// ===== APP TABS =====
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`tab-${id}`).classList.add('active');
+  if(el) el.classList.add('active');
+}
+function switchDash(id, el) {
+  document.querySelectorAll('.dpanel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`dash-${id}`).classList.add('active');
+  el.classList.add('active');
+}
+function toggleTT(row) {
+  const c = row.querySelector('.tt-check');
+  c.classList.toggle('done');
+  c.textContent = c.classList.contains('done') ? '✓' : '';
+  if (c.classList.contains('done')) showToast('Session marked complete ✅');
+}
+
+// ===== LESSON MODAL =====
+const lessons = {
+  math1:{title:'Quadratic Equations & Functions',sub:'Mathematics · CXC Paper 2 · 45 minutes',content:'• Factoring: simple and complex quadratics\n• Completing the square method\n• The quadratic formula — when and how to use it\n• Graphing parabolas: vertex, axis of symmetry, x-intercepts\n• Real-world word problems using quadratic models\n• 5 CXC-style practice questions with full solutions',tip:'Aaliyah, your diagnostic showed gaps in graphing parabolas and word problems. At 35% completion, mastering this topic could add 8–12% to your Mathematics score. I\'ll focus our practice on graphing first.',schedule:'Wednesday & Thursday · 45 min each · Week 3–4 of your plan'},
+  eng1:{title:'Summary Writing Techniques',sub:'English A · CXC Section 2 · 30 minutes',content:'• The 8-step CXC summary method (step-by-step)\n• Identifying key ideas vs supporting details\n• Paraphrasing without losing meaning\n• Word count management (the 120-word rule)\n• Common errors that cost marks in the exam\n• 3 full practice passages with model answers included',tip:'You\'re at 74% in English — you\'re already very close to a Grade 1! Summary writing is worth 25 marks on Paper 2. Your diagnostic showed strong comprehension but paraphrasing needs work. Focus on that and you\'re there.',schedule:'Wednesday · 30 min · Week 3 of your plan'},
+  bio1:{title:'Cell Biology & Genetics',sub:'Biology · CXC Priority Topic · 60 minutes',content:'• Cell structure: plant vs animal cells (with diagrams)\n• Mitosis: stages (PMAT), significance, what\'s produced\n• Meiosis: stages, comparison with mitosis\n• DNA structure — base pairing rules, double helix\n• Mendelian genetics: dominant/recessive, ratios\n• Punnett squares — worked examples with practice',tip:'Biology is your most urgent subject at 55%, and your diagnostic showed gaps in meiosis and genetics. This lesson has detailed diagrams — print them at the hub. Genetics questions appear on almost every CXC Biology paper.',schedule:'Monday & Tuesday · 60 min each · Week 3–4 of your plan'},
+  hist1:{title:'Independence Movements 1940–1980',sub:'Caribbean History · CXC · 40 minutes',content:'• The West Indies Federation (1958–1962) — formation, failure\n• Key independence leaders: Manley, Bustamante, Williams, Bird\n• Jamaica\'s independence 1962 — causes and significance\n• Decolonisation patterns across the Caribbean\n• CARICOM formation and regional integration goals\n• Essay structure tips — how to score full marks on Paper 2',tip:'History is your strongest subject at 81% — incredible work! You\'re on track for a Grade 1. The Federation is the most common 15-mark essay. This lesson seals that gap. One focused session and that question is yours.',schedule:'Friday · 40 min · Week 3 of your plan'},
+  acc1:{title:'Trial Balance & Financial Statements',sub:'Principles of Accounts · CXC · 50 minutes',content:'• Purpose and structure of a trial balance\n• Preparing a trial balance from ledger accounts step-by-step\n• Income statement (Trading & Profit/Loss Account)\n• Balance sheet: assets, liabilities, capital\n• Common errors: errors of omission, reversal, principle\n• A complete worked example from scratch to finish',tip:'Accounts is at 32% — this is your biggest gap. The good news: financial statements follow strict, learnable rules. Once you know the format, marks are predictable and repeatable. Let\'s start here and build fast.',schedule:'Wednesday & Saturday · 50 min each · Week 3–4 of your plan'}
+};
+function openLesson(id) {
+  const l = lessons[id];
+  document.getElementById('mTitle').textContent = l.title;
+  document.getElementById('mSub').textContent = l.sub;
+  document.getElementById('mContent').textContent = l.content;
+  document.getElementById('mTip').textContent = l.tip;
+  document.getElementById('mSchedule').textContent = l.schedule;
+  document.getElementById('lessonModal').classList.add('open');
+}
+function closeModals(e) {
+  if(e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('open');
+  }
+}
+const encouragements = [
+  {score:'+5%',msg:"You just pushed your score higher, Aaliyah! Every lesson you complete is a step across the bridge. You're doing something extraordinary — keep building. 🌟"},
+  {score:'+7%',msg:"That's growth right there! The hurricane took some time, but it can't take your potential. You're proving that every single session. Keep going! 💪"},
+  {score:'+4%',msg:"Progress! Remember — recovery isn't a straight line. Every percentage point you earn means you're closer to walking into that exam room with confidence. You've got this! 🌈"},
+];
+let currentLesson = '';
+function completeLesson() {
+  document.getElementById('lessonModal').classList.remove('open');
+  const enc = encouragements[Math.floor(Math.random()*encouragements.length)];
+  document.getElementById('encScore').textContent = enc.score;
+  document.getElementById('encMsg').textContent = enc.msg;
+  document.getElementById('encOverlay').classList.add('open');
+}
+function closeEnc() {
+  document.getElementById('encOverlay').classList.remove('open');
+}
+
+// ===== AI TUTOR =====
+const aiSystem = `You are Nova, a warm, encouraging AI tutor for CXC and CAPE students in Jamaica who are recovering from hurricane disruptions.
+
+Student profile:
+- Name: Aaliyah Brown, Grade 11, St. Thomas High School, CXC 2026
+- Subjects & scores: Mathematics 68% (diagnostic gap: graphing parabolas, word problems), English A 74% (gap: paraphrasing), Biology 55% (gap: meiosis, genetics) — URGENT, Caribbean History 81% — strong, Principles of Accounts 32% — most urgent
+- Weeks missed due to hurricane: 1–2 weeks
+- Recovery plan: Week 3 of 6
+- Lesson timetable: Mon=Maths+Biology, Tue=English+History, Wed=English+Accounts, Thu=Maths+Biology, Fri=History+English, Sat=Hub session
+
+Lesson plan details available:
+- Mathematics: Quadratics (factoring, completing square, formula, graphing), Linear equations, Geometry, Statistics
+- English A: Summary writing (8-step method), Comprehension, Essay writing, Vocabulary
+- Biology: Cell biology, Mitosis/Meiosis, Genetics, Ecosystems, Human biology
+- Caribbean History: Independence movements, West Indies Federation, Key leaders, CARICOM
+- Accounts: Trial balance, Income statement, Balance sheet, Ledger accounts
+
+Your role: Draw from the student's diagnostic results, scores, and lesson plan to give targeted, specific tutoring. Acknowledge the hurricane's impact with empathy but focus on building confidence. Keep answers under 160 words. Always end with one encouraging line. If a student seems stressed, acknowledge feelings first. Give practice questions when asked. Be specific, not generic.`;
+
+let chatHistory = [{role:'assistant',content:"Hey Aaliyah 👋 I'm Nova. I've reviewed your diagnostic results and your current scores — and I'm here to help you close every gap before your CXC exams.\n\nYour strongest subject is Caribbean History at 81% — brilliant! Your biggest opportunity right now is Principles of Accounts at 32%. Want me to start there, or is there something specific on your mind?"}];
+
+async function sendMsg() {
+  const inp = document.getElementById('chatInp');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  addChatMsg(text,'user');
+  chatHistory.push({role:'user',content:text});
+  const t = addChatMsg('Nova is thinking…','ai typing');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:CLAUDE_MODEL,max_tokens:1000,system:aiSystem,messages:chatHistory})
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || "I'm having a connectivity issue. Try again in a moment!";
+    t.remove();
+    addChatMsg(reply,'ai');
+    chatHistory.push({role:'assistant',content:reply});
+  } catch(e) {
+    t.remove();
+    addChatMsg("Network issue detected. In offline mode: for Accounts, start with the trial balance format — debit side (assets/expenses) on the left, credit side (liabilities/capital/revenue) on the right. They must balance. You've got this! 💙",'ai');
+  }
+}
+function addChatMsg(text,type) {
+  const box = document.getElementById('chatMsgs');
+  const d = document.createElement('div');
+  d.className = 'msg '+type;
+  d.textContent = text;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+  return d;
+}
+function quickQ(q) {
+  document.getElementById('chatInp').value = q;
+  switchTab('tutor', document.querySelector('.nav-item:nth-child(3)'));
+  sendMsg();
+}
+function handleKey(e) {
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none',2500);
+}
+
+function openNotifCenter() {
+  const el = document.getElementById('notifCenter');
+  el.style.display = 'flex';
+}
+function closeNotifCenter(e) {
+  if(e.target === document.getElementById('notifCenter')) {
+    document.getElementById('notifCenter').style.display = 'none';
+  }
+}
+
+// Animate progress bars
+window.addEventListener('load',()=>{
+  document.querySelectorAll('.prog-fill,.rs-fill').forEach(el=>{
+    const w=el.style.width; el.style.width='0';
+    setTimeout(()=>el.style.width=w,400);
+  });
+});
+</script>
+</body>
+</html>
